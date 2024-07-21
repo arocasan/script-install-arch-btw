@@ -8,5 +8,5 @@ Install git & run script
 pacman -Sy --needed git
 git clone https://github.com/arocasan/ezinstall-arch-btw
 cd ezinstall-arch-btw
-./ez-install-arch-btw.sh
+./ez-install_arch_btw.sh
 ```
