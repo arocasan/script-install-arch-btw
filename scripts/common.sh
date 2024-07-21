@@ -34,35 +34,35 @@ check_uefi() {
     fi
 }
 
-# Function to get user inputs
-function set_config() {
-    echo -n "Enter the disk (e.g., /dev/nvme0n1): "
-    read DISK
-    if [ -z "$DISK" ]; then error_feedback "Disk is required!"; fi
+# Function to get the disk input from the user
+function get_disk() {
+    while true; do
+        echo "Available disks:"
+        disks=($(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram' | awk '{print $1}'))
+        models=($(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram' | awk '{print $3}'))
+        
+        for i in "${!disks[@]}"; do
+            echo "$((i+1)). ${disks[$i]} (${models[$i]})"
+        done
 
-    echo -n "Enter the hostname: "
-    read HOSTNAME
-    if [ -z "$HOSTNAME" ]; then error_feedback "Hostname is required!"; fi
+        echo -n "Enter the number corresponding to your disk choice: "
+        read choice
 
-    echo -n "Enter the timezone (e.g., Europe/Stockholm): "
-    read TIMEZONE
-    if [ -z "$TIMEZONE" ]; then error_feedback "Timezone is required!"; fi
+        if [[ ! $choice =~ ^[0-9]+$ ]] || ((choice < 1 || choice > ${#disks[@]})); then
+            error_feedback "Invalid choice. Please enter a number between 1 and ${#disks[@]}."
+            continue
+        fi
 
-    echo -n "Enter the language (e.g., en_US.UTF-8): "
-    read LANGUAGE
-    if [ -z "$LANGUAGE" ]; then error_feedback "Language is required!"; fi
+        selected_disk="/dev/${disks[$((choice-1))]}"
+        
+        echo "You have selected: $selected_disk. Is this correct? (yes/no)"
+        read confirmation
 
-    echo -n "Enter the username: "
-    read USERNAME
-    if [ -z "$USERNAME" ]; then error_feedback "Username is required!"; fi
-
-    echo -n "Enter the shell for the user (e.g., /bin/zsh): "
-    read USER_SHELL
-    if [ -z "$USER_SHELL" ]; then USER_SHELL="/bin/zsh"; fi
-
-    echo -n "Enter the password for the user: "
-    read -s PASSWORD
-    echo
-    if [ -z "$PASSWORD" ]; then error_feedback "Password is required!"; fi
+        if [[ $confirmation == "yes" ]]; then
+            declare -g DISK=$selected_disk
+            break
+        else
+            echo "Please select again."
+        fi
+    done
 }
-

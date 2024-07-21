@@ -19,4 +19,4 @@ install_packages ez_arch_btw.txt
 
 # Set configuration
 show_logo
-set_config
+get_disk
