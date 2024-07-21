@@ -21,6 +21,10 @@ install_packages ez_arch_btw.txt
 show_logo
 get_disk
 
+
 # Wipe disk
 show_logo
 wipe_disk
+
+
+
