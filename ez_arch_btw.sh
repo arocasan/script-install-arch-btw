@@ -20,5 +20,11 @@ install_packages ez_arch_btw.txt
 # Set configuration
 show_logo
 get_disk
-echo $DISK
+
+
+# Wipe disk
+show_logo
+wipe_disk
+
+
 
