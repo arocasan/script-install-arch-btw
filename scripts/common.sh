@@ -1,18 +1,18 @@
 #!/bin/bash
 # Function to show progress with bold, italic, and purple text
 function info_prg() {
-    echo -e "\033[1;3;35m$1\033[0m" | pv -qL 10
+    echo -e "\033[1;3;35m$1\033[0m" 
 }
 
 # Function to provide success feedback with  bold, italic, and green text
 function success_feedback() {
-    echo -e "\n\033[1;3;92m$1\033[0m" | pv -qL 10
+    echo -e "\n\033[1;3;92m$1\033[0m" 
     sleep 2  # Pause to show the message
 }
 
 # Function to provide error feedback with bold, italic, and red text
 function error_feedback() {
-    echo -e "\n\033[1;3;91mError: $1\033[0m" | pv -qL 10
+    echo -e "\n\033[1;3;91mError: $1\033[0m" 
     exit 1
 }
 
@@ -83,7 +83,7 @@ function get_disk() {
         fi
     done
 }
-
+# Function to wipe disk
 function wipe_disk() {
     info_prg "Do you want to wipe the disk $DISK? This action is irreversible. (yes/no)"
     read wipe_confirmation
@@ -100,3 +100,79 @@ function wipe_disk() {
         error_feedback "Disk wipe operation cancelled."
     fi
 }
+
+# Function to get hostname input
+function get_hostname() {
+    echo -n "Enter the hostname: "
+    read HOSTNAME
+    if [ -z "$HOSTNAME" ]; then 
+        error_feedback "Hostname is required!"
+    fi
+    declare -g HOSTNAME=$HOSTNAME
+}
+
+# Function to get timezone input
+function get_timezone() {
+    echo -n "Enter the timezone (e.g., Europe/Stockholm): "
+    read TIMEZONE
+    if [ -z "$TIMEZONE" ]; then 
+        error_feedback "Timezone is required!"
+    fi
+    declare -g TIMEZONE=$TIMEZONE
+}
+
+# Function to get language input
+function get_language() {
+    echo -n "Enter the language (e.g., en_US.UTF-8): "
+    read LANGUAGE
+    if [ -z "$LANGUAGE" ]; then 
+        error_feedback "Language is required!"
+    fi
+    declare -g LANGUAGE=$LANGUAGE
+}
+
+# Function to get username input
+function get_username() {
+    echo -n "Enter the username: "
+    read ARCH_USERNAME
+    if [ -z "$ARCH_USERNAME" ]; then 
+        error_feedback "Username is required!"
+    fi
+    declare -g ARCH_USERNAME=$ARCH_USERNAME
+}
+
+# Function to get user shell input
+function get_user_shell() {
+    echo -n "Enter the shell for the user (e.g., /bin/zsh): "
+    read USER_SHELL
+    if [ -z "$USER_SHELL" ]; then 
+        USER_SHELL="/bin/zsh"
+    fi
+    declare -g USER_SHELL=$USER_SHELL
+}
+
+# Function to get password input
+function get_password() {
+    local password_var=$1
+    local prompt_message=$2
+    while true; do
+        info_prg -n "Enter the password for $prompt_message: "
+        read -s PASSWORD
+        echo
+        if [ -z "$PASSWORD" ]; then 
+            error_feedback "Password is required!"
+        fi
+
+        info_prg -n "Confirm the password for $prompt_message: "
+        read -s PASSWORD_CONFIRM
+        echo
+
+        if [ "$PASSWORD" == "$PASSWORD_CONFIRM" ]; then
+            declare -g $password_var=$PASSWORD
+            break
+        else
+            error_feedback "Passwords do not match. Please try again."
+        fi
+    done
+}
+
