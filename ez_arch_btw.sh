@@ -17,6 +17,15 @@ check_uefi
 show_logo
 install_packages ez_arch_btw.txt
 
+# Get user input
+show_logo
+get_hostname
+get_timezone
+get_language
+get_user_shell
+get_password "ARCH_USER" "the user"
+get_password "LUKS_PWD" "the luks pwd"
+
 # Set configuration
 show_logo
 get_disk
@@ -25,6 +34,5 @@ get_disk
 # Wipe disk
 show_logo
 wipe_disk
-
 
 
