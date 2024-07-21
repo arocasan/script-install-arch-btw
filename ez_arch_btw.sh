@@ -9,9 +9,14 @@ fi
 # Load configuration
 source ./scripts/common.sh
 
-# Display ASCII log
+# Verify system is booted into UEFI mode
 show_logo
-
+check_uefi 
 
 # Install packages nessecary for the script
+show_logo
 install_packages ez_arch_btw.txt
+
+# Set configuration
+show_logo
+set_config
