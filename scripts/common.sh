@@ -2,7 +2,7 @@
 # Function to show progress with bold, italic, and purple text
 function info_prg() {
 
-    echo -e "\033[1;3;34m$1\033[0m" 
+    echo -e "\033[1;3;95m$1\033[0m" 
 
 }
 
