@@ -223,6 +223,20 @@ function create_disk_partitions(){
 
 }
 
+function create_lvm(){
+  info_msg "Configuring LVM and encryption for ${DISK}p3"
+  modprobe dm-crypt && modprobe dm-mod
+  echo "$LUKS_PWD" | cryptsetup luksFormat -V -s 512 -h sha512 ${DISK}p3
+  echo "$LUKS_PWD" | cryptsetup open ${DISK}p3
+
+  pvcreate /dev/mapper/$LVM_NAME
+  vgcreate $VGROUP /dev/mapper/$LVM_NAME
+  lvcreate -n swap -L $SWAPGB $VGROUP
+  lvcreate -n root -L $ROOTGB $VGROUP
+  lvcreate -n home -L $HOMEGB $VGROUP
+
+}
+
 
 # Main function to get all user inputs
 function set_user_inputs() {
