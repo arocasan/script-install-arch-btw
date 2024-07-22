@@ -306,22 +306,12 @@ function create_filesystems(){
 }
 
 function making_dirs(){
+
 info_msg "Making directories" 
-  ls /mnt
-  DIRS=("/mnt/home" "/mnt/boot" "/mnt/boot/efi")
-
-  for DIR in "${DIRS[@]}"; do
-    if [ -d "$DIR" ]; then
-      info_msg "Removing existing directory: $DIR"
-      rm -rf "$DIR" 
-    fi
-    info_msg "Creating directory: $DIR"
-    mkdir -p "$DIR"
-    ls /mnt
-  done
-ls /mnt
+mkdir /mnt/{home,boot}
+mkdir /mnt/boot/efi
 info_msg "Moving on."
-
+ls /mnt
 
 }
 
