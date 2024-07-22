@@ -6,7 +6,7 @@ source ./conf/defaults.conf
 # Function to show progress with bold, italic, and purple text
 function info_msg() {
 
-    echo -e "\033[35m$1\033[0m" 
+    echo -e "\033[94m$1\033[0m" 
 
 }
 
@@ -210,6 +210,18 @@ function wipe_disk() {
     fi
 }
 
+# Function to create disk partitions
+
+function create_disk_partitions(){
+    info_msg "Preparing partitions for $DISK"
+
+    sgdisk -n 1::+2G -t 1:ef00 $DISK
+    sgdisk -n 2::+4G -t 2:ef02 $DISK
+    sgdisk -n 3::-0  -t 3:8309 $DISK
+
+
+
+}
 
 
 # Main function to get all user inputs
@@ -224,3 +236,7 @@ function set_user_inputs() {
     set_password "ANOTHER_PASSWORD" "another user"
 
   }
+
+function conf_filesystem(){
+  create_disk_partitions
+}

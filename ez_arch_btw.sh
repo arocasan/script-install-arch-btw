@@ -37,6 +37,9 @@ set_disk
 show_logo
 wipe_disk
 
+# Configure file system
+conf_filesystem
+
  # Remove myself
 self_remove() {
   rm -rf ~/ezinstall-arch-btw
