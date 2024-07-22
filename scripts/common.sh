@@ -199,6 +199,7 @@ function wipe_disk() {
 
     if [[ $wipe_confirmation == "yes" ]]; then
         info_msg "Wiping disk $DISK..."
+        umount -A --recusive /mnt
         sgdisk --zap-all $DISK
         if [ $? -eq 0 ]; then
             success_feedback "Disk $DISK wiped successfully."
@@ -213,11 +214,14 @@ function wipe_disk() {
 # Function to create disk partitions
 
 function create_disk_partitions(){
+    
     info_msg "Preparing partitions for $DISK"
 
     sgdisk -n 1::+2G -t 1:ef00 $DISK
     sgdisk -n 2::+4G -t 2:ef02 $DISK
     sgdisk -n 3::-0  -t 3:8309 $DISK
+
+    partprobe ${DISK}
 
 
 
