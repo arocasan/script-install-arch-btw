@@ -228,7 +228,7 @@ function wipe_disk() {
         sgdisk --zap-all $DISK
         sgdisk -o $DISK
         info_msg | partprobe
-            reboot
+            exit
         fi
     else
         error_feedback "Disk wipe operation cancelled."
