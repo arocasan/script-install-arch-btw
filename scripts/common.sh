@@ -307,7 +307,7 @@ function create_filesystems(){
 function mount_filesystems(){
   info_msg "Mounting filesystems"
   
-  DIRS=("/mnt/home","/mnt/boot","/mnt/boot/efi")
+  DIRS=("/mnt/home" "/mnt/boot" "/mnt/boot/efi")
 
   for DIR in "${DIRS[@]}"; do
     if [ -d "$DIR" ]; then
