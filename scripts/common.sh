@@ -223,6 +223,12 @@ function wipe_disk() {
             success_feedback "Disk $DISK wiped successfully."
         else
             error_feedback "Failed to wipe the disk $DISK."
+            info_msg "Wiping disk $DISK..."
+        unmount_all_mnt
+        sgdisk --zap-all $DISK
+        sgdisk -o $DISK
+        info_msg | partprobe
+            reboot
         fi
     else
         error_feedback "Disk wipe operation cancelled."
