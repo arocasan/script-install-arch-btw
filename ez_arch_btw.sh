@@ -1,5 +1,4 @@
 #!/bin/bash
-function get_password() 
 
 # Ensure script is run as root
 if [[ $EUID -ne 0 ]]; then
@@ -21,17 +20,17 @@ install_packages ez_arch_btw.txt
 
 # Get user input
 show_logo
-get_username
-get_hostname
-get_timezone
-get_language
-get_user_shell
-get_password "ARCH_USER" "the user"
-get_password "LUKS_PWD" "the luks pwd"
+set_hostname
+set_username
+set_timezone
+set_language
+set_user_shell
+set_password "ARCH_USER" "the user"
+set_password "LUKS_PWD" "the luks pwd"
 
 # Set configuration
 show_logo
-get_disk
+set_disk
 
 
 # Wipe disk
@@ -45,7 +44,7 @@ self_remove() {
 
 # Use the captured inputs for other operations
 echo -e "\033[32mDisk: $DISK\033[0m"
-echo -e "\033[32mHostname: $HOSTNAME\033[0m"
+echo -e "\033[32mHostname: $ARCH_HOSTNAME\033[0m"
 echo -e "\033[32mTimezone: $TIMEZONE\033[0m"
 echo -e "\033[32mLanguage: $LANGUAGE\033[0m"
 echo -e "\033[32mUsername: $ARCH_USERNAME\033[0m"

@@ -4,9 +4,9 @@
 source ./conf/defaults.conf
 
 # Function to show progress with bold, italic, and purple text
-function info_prg() {
+function info_msg() {
 
-    echo -e "\033[1;35m$1\033[0m" 
+    echo -e "\033[35m$1\033[0m" 
 
 }
 
@@ -34,10 +34,10 @@ install_packages() {
 
     while IFS= read -r package; do
         if ! command -v "$package" &> /dev/null; then
-            info_prg "Installing $package..."
+            info_msg "Installing $package..."
             pacman -Sy --needed --noconfirm "$package"
         else
-            info_prg "$package is already installed"
+            info_msg "$package is already installed"
         fi
     done < "$package_file"
 }
@@ -60,9 +60,9 @@ check_uefi() {
 
 
 # Function to get hostname input
-function get_hostname() {
+function set_hostname() {
     while true; do
-        info_prg "Enter the hostname [default: $DEFAULT_HOSTNAME]: "
+        info_msg "Enter the hostname [default: $DEFAULT_HOSTNAME]: "
         read -r ARCH_HOSTNAME
         ARCH_HOSTNAME=${ARCH_HOSTNAME:-$DEFAULT_HOSTNAME}
         if [ -n "$ARCH_HOSTNAME" ]; then
@@ -76,9 +76,9 @@ function get_hostname() {
 }
 
 # Function to get timezone input
-function get_timezone() {
+function set_timezone() {
     while true; do
-        info_prg "Enter the timezone (e.g., Europe/Stockholm) [default: $DEFAULT_TIMEZONE]: "
+        info_msg "Enter the timezone (e.g., Europe/Stockholm) [default: $DEFAULT_TIMEZONE]: "
         read -r TIMEZONE
         TIMEZONE=${TIMEZONE:-$DEFAULT_TIMEZONE}
         if [ -n "$TIMEZONE" ]; then
@@ -92,9 +92,9 @@ function get_timezone() {
 }
 
 # Function to get language input
-function get_language() {
+function set_language() {
     while true; do
-        info_prg "Enter the language (e.g., en_US.UTF-8) [default: $DEFAULT_LANGUAGE]: "
+        info_msg "Enter the language (e.g., en_US.UTF-8) [default: $DEFAULT_LANGUAGE]: "
         read -r LANGUAGE
         LANGUAGE=${LANGUAGE:-$DEFAULT_LANGUAGE}
         if [ -n "$LANGUAGE" ]; then
@@ -108,9 +108,9 @@ function get_language() {
 }
 
 # Function to get username input
-function get_username() {
+function set_username() {
     while true; do
-        info_prg "Enter the username [default: $DEFAULT_USERNAME]: "
+        info_msg "Enter the username [default: $DEFAULT_USERNAME]: "
         read -r ARCH_USERNAME
         ARCH_USERNAME=${ARCH_USERNAME:-$DEFAULT_USERNAME}
         if [ -n "$ARCH_USERNAME" ]; then
@@ -124,9 +124,9 @@ function get_username() {
 }
 
 # Function to get user shell input
-function get_user_shell() {
+function set_user_shell() {
     while true; do
-        info_prg "Enter the shell for the user (e.g., /bin/zsh) [default: $DEFAULT_SHELL]: "
+        info_msg "Enter the shell for the user (e.g., /bin/zsh) [default: $DEFAULT_SHELL]: "
         read -r USER_SHELL
         USER_SHELL=${USER_SHELL:-$DEFAULT_SHELL}
         if [ -n "$USER_SHELL" ]; then
@@ -140,7 +140,7 @@ function get_user_shell() {
 }
 
 # Reusable function to get password input and set it to a specified variable
-function get_password() {
+function set_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
@@ -166,7 +166,7 @@ function get_password() {
     done
 }
  
-function get_disk() {
+function set_disk() {
     local disks
     disks=$(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram')
     local disk_list=()
@@ -194,11 +194,11 @@ function get_disk() {
 
 # Function to wipe disk
 function wipe_disk() {
-    info_prg "Do you want to wipe the disk $DISK? This action is irreversible. (yes/no)"
+    info_msg "Do you want to wipe the disk $DISK? This action is irreversible. (yes/no)"
     read wipe_confirmation
 
     if [[ $wipe_confirmation == "yes" ]]; then
-        info_prg "Wiping disk $DISK..."
+        info_msg "Wiping disk $DISK..."
         sgdisk --zap-all $DISK
         if [ $? -eq 0 ]; then
             success_feedback "Disk $DISK wiped successfully."
@@ -213,14 +213,14 @@ function wipe_disk() {
 
 
 # Main function to get all user inputs
-function get_user_inputs() {
-    get_disk
-    get_hostname
-    get_timezone
-    get_language
-    get_username
-    get_user_shell
-    get_password "USER_PASSWORD" "the user"
-    get_password "ANOTHER_PASSWORD" "another user"
+function set_user_inputs() {
+    set_disk
+    set_hostname
+    set_timezone
+    set_language
+    set_username
+    set_user_shell
+    set_password "USER_PASSWORD" "the user"
+    set_password "ANOTHER_PASSWORD" "another user"
 
   }
