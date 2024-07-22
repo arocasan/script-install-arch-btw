@@ -5,8 +5,8 @@ source ./conf/defaults.conf
 
  # Remove myself
 self_remove() {
-  cd ~/
   rm -rf ~/ezinstall-arch-btw
+  cd
 }
 
 
