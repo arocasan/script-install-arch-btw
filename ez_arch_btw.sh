@@ -6,9 +6,6 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-# Load defaults
-source ./conf/defaults.conf
-
 # Load configuration
 source ./scripts/common.sh
 

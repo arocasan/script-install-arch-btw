@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Load defaults
+source ./conf/defaults.conf
+
 # Function to show progress with bold, italic, and purple text
 function info_prg() {
 
