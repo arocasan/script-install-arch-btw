@@ -239,7 +239,7 @@ function create_lvm(){
 
 function create_filesystems(){
   info_msg "Creating filesystems for $DISK"
-
+  umount -a
  yes | mkfs.fat -F32 ${DISK}p1 
  yes | mkfs.ext4 ${DISK}p2
  yes | mkfs.btrfs -L root /dev/mapper/${VGROUP}-root
