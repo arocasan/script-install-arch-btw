@@ -319,6 +319,7 @@ function mount_filesystems(){
   info_msg "Mounting filesystems"
  
   mount /dev/mapper/${VGROUP}-root /mnt
+  making_dirs
   mount /dev/mapper/${VGROUP}-home /mnt/home
   mount ${DISK}p2 /mnt/boot
   mount ${DISK}p1 /mnt/boot/efi
