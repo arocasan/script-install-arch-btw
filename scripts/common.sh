@@ -300,6 +300,7 @@ function mount_filesystems(){
       rm -rf "$DIR" 
     fi
     info_msg "Creating directory: $DIR"
+    mkdir "$DIR"
   done
 
 
