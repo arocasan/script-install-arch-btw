@@ -47,4 +47,4 @@ echo -e "\033[32mLanguage: $LANGUAGE\033[0m"
 echo -e "\033[32mUsername: $ARCH_USERNAME\033[0m"
 echo -e "\033[32mUser shell: $USER_SHELL\033[0m"
 
-self_remove
+trap self_remove EXIT

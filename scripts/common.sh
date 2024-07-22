@@ -235,7 +235,7 @@ function wipe_disk() {
         sgdisk --zap-all $DISK
         sgdisk -o $DISK
         info_msg | partprobe
-        self_remove 
+        trap self_remove EXIT 
             exit
         fi
     else
