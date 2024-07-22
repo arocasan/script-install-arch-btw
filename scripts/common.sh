@@ -33,7 +33,7 @@ unmount_all_mnt() {
   partprobe
   
   # Get all mount points starting with /mnt
-  MOUNT_POINTS=$(mount | grep ' /mnt' | awk '{print $3}' | sort -r)
+  MOUNT_POINTS=$("/mnt/home" "/mnt/boot" "/mnt/boot/efi")
   # Loop through each mount point and unmount
   for MOUNT_POINT in $MOUNT_POINTS; do
     info_msg "Unmounting $MOUNT_POINT"
