@@ -22,6 +22,21 @@ function error_feedback() {
     echo -e "\n\033[1;3;91mError: $1\033[0m"
 }
 
+unmount_all_mnt() {
+  # Get all mount points starting with /mnt
+  MOUNT_POINTS=$(mount | grep ' /mnt' | awk '{print $3}' | sort -r)
+
+  # Loop through each mount point and unmount
+  for MOUNT_POINT in $MOUNT_POINTS; do
+    echo "Unmounting $MOUNT_POINT"
+    sudo umount "$MOUNT_POINT"
+    if [ $? -eq 0 ]; then
+      echo "$MOUNT_POINT unmounted successfully"
+    else
+      echo "Failed to unmount $MOUNT_POINT"
+    fi
+  done
+}
 
 # Function to install necessary packages from a specified file in the packages directory
 install_packages() {
@@ -199,7 +214,7 @@ function wipe_disk() {
 
     if [[ $wipe_confirmation == "yes" ]]; then
         info_msg "Wiping disk $DISK..."
-        umount -A --recursive /mnt
+        unmount_all_mnt
         sgdisk --zap-all $DISK
         if [ $? -eq 0 ]; then
             success_feedback "Disk $DISK wiped successfully."
@@ -229,6 +244,7 @@ function create_disk_partitions(){
 
 }
 
+
 function create_lvm(){
   info_msg "Configuring LVM and encryption for ${DISK}p3"
   modprobe dm-crypt && modprobe dm-mod
@@ -250,7 +266,8 @@ function create_lvm(){
 
 function create_filesystems(){
   info_msg "Creating filesystems for $DISK"
-  umount -A --recursive /mnt
+  
+  unmount_all_mnt
 
  yes | mkfs.fat -F32 ${DISK}p1 
  yes | mkfs.ext4 ${DISK}p2
