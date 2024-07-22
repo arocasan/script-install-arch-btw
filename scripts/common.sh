@@ -57,12 +57,17 @@ check_uefi() {
 
 # Function to get hostname input
 function get_hostname() {
+  while true; do
     info_prg "Enter the hostname: "
     read HOSTNAME
-    if [ -z "$HOSTNAME" ]; then 
+    if [ -n "$HOSTNAME" ]; then
+
+    declare -g HOSTNAME=$HOSTNAME
+    break 
+  else
+
         error_feedback "Hostname is required!"
     fi
-    declare -g HOSTNAME=$HOSTNAME
 }
 
 # Function to get timezone input
@@ -110,7 +115,8 @@ function get_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
-        info_prg "Enter the password for $prompt_message: "
+
+        info_prg -n "Enter the password for $prompt_message: "
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
@@ -134,35 +140,28 @@ function get_password() {
 
 # Function to get the disk input from the user
 function get_disk() {
+
+    local disks
+    disks=$(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram')
+    local disk_list=()
+    local index=1
+
+    echo "Available disks:"
+    while IFS= read -r line; do
+        disk_list+=("$line")
+        echo "$index. $line"
+        ((index++))
+    done <<< "$disks"
+
     while true; do
-        info_prg "Available disks:"
-        disks=($(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram' | awk '{print $1}'))
-        models=($(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram' | awk '{print $3}'))
-        
-        for i in "${!disks[@]}"; do
-            info_prg "$((i+1)). ${disks[$i]} (${models[$i]})"
-        done
-
-        info_prg "Enter the number corresponding to your disk choice: "
-        read choice
-
-        if [[ ! $choice =~ ^[0-9]+$ ]] || ((choice < 1 || choice > ${#disks[@]})); then
-            error_feedback "Invalid choice. Please enter a number between 1 and ${#disks[@]}."
-            continue
-        fi
-
-        selected_disk="/dev/${disks[$((choice-1))]}"
-        
-        info_prg "You have selected: $selected_disk. Is this correct? (yes/no)"
-        read confirmation
-
-        if [[ $confirmation == "yes" ]]; then
-            declare -g DISK=$selected_disk
-            success_feedback "Arch will be installed on: $selected_disk"
+        echo -n "Enter the number corresponding to the disk (e.g., 1): "
+        read -r selected_disk
+        if [[ "$selected_disk" =~ ^[1-9][0-9]*$ ]] && [ "$disk_choice" -le "${#disk_list[@]}" ]; then
+            DISK=$(echo "${disk_list[$((selected_disk - 1))]}" | awk '{print $1}')
+            declare -g DISK=$DISK
             break
         else
-            error_feedback "Please select again."
-
+            echo "Error: Invalid choice. Please enter a number between 1 and ${#disk_list[@]}."
         fi
     done
 }
