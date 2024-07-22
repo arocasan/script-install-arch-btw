@@ -217,6 +217,8 @@ function wipe_disk() {
         info_msg "Wiping disk $DISK..."
         unmount_all_mnt
         sgdisk --zap-all $DISK
+        sgdisk -o $DISK
+        info_msg | partprobe
         if [ $? -eq 0 ]; then
             success_feedback "Disk $DISK wiped successfully."
         else
