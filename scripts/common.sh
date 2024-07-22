@@ -57,7 +57,7 @@ check_uefi() {
 
 # Function to get hostname input
 function get_hostname() {
-    echo -n "Enter the hostname: "
+    info_prg "Enter the hostname: "
     read HOSTNAME
     if [ -z "$HOSTNAME" ]; then 
         error_feedback "Hostname is required!"
@@ -67,7 +67,7 @@ function get_hostname() {
 
 # Function to get timezone input
 function get_timezone() {
-    echo -n "Enter the timezone (e.g., Europe/Stockholm): "
+    info_prg "Enter the timezone (e.g., Europe/Stockholm): "
     read TIMEZONE
     if [ -z "$TIMEZONE" ]; then 
         error_feedback "Timezone is required!"
@@ -77,7 +77,7 @@ function get_timezone() {
 
 # Function to get language input
 function get_language() {
-    echo -n "Enter the language (e.g., en_US.UTF-8): "
+    info_prg "Enter the language (e.g., en_US.UTF-8): "
     read LANGUAGE
     if [ -z "$LANGUAGE" ]; then 
         error_feedback "Language is required!"
@@ -87,7 +87,7 @@ function get_language() {
 
 # Function to get username input
 function get_username() {
-    echo -n "Enter the username: "
+    info_prg "Enter the username: "
     read ARCH_USERNAME
     if [ -z "$ARCH_USERNAME" ]; then 
         error_feedback "Username is required!"
@@ -97,7 +97,7 @@ function get_username() {
 
 # Function to get user shell input
 function get_user_shell() {
-    echo -n "Enter the shell for the user (e.g., /bin/zsh): "
+    info_prg "Enter the shell for the user (e.g., /bin/zsh): "
     read USER_SHELL
     if [ -z "$USER_SHELL" ]; then 
         USER_SHELL="/bin/zsh"
@@ -110,14 +110,14 @@ function get_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
-        info_prg -n "Enter the password for $prompt_message: "
+        info_prg "Enter the password for $prompt_message: "
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
             error_feedback "Password is required!"
         fi
 
-        info_prg -n "Confirm the password for $prompt_message: "
+        info_prg  "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
         echo
 
@@ -143,7 +143,7 @@ function get_disk() {
             info_prg "$((i+1)). ${disks[$i]} (${models[$i]})"
         done
 
-        info_prg -n "Enter the number corresponding to your disk choice: "
+        info_prg "Enter the number corresponding to your disk choice: "
         read choice
 
         if [[ ! $choice =~ ^[0-9]+$ ]] || ((choice < 1 || choice > ${#disks[@]})); then
@@ -158,6 +158,7 @@ function get_disk() {
 
         if [[ $confirmation == "yes" ]]; then
             declare -g DISK=$selected_disk
+            success_feedback "Arch will be installed on: $selected_disk"
             break
         else
             error_feedback "Please select again."
