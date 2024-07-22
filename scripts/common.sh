@@ -231,10 +231,17 @@ function wipe_disk() {
         else
             error_feedback "Failed to wipe the disk $DISK."
             info_msg "Wiping disk $DISK..."
-        unmount_all_mnt
-        sgdisk --zap-all $DISK
-        sgdisk -o $DISK
-        info_msg | partprobe
+            unmount_all_mnt
+            swapoff /dev/mapper/${VGROUP}-swap
+            lvchange -an "${VGROUP}/swap"
+            lvchange -an "${VGROUP}/root"
+            vgchange -an "${VGROUP}"
+            cryptsetup luksClose $LVM_NAME
+
+            sgdisk --zap-all $DISK
+            sgdisk -o $DISK
+            info_msg | partprobe
+ 
         trap self_remove EXIT 
             exit
         fi
@@ -302,7 +309,7 @@ function mount_filesystems(){
   
   DIRS=("/mnt/home","/mnt/boot","/mnt/boot/efi")
 
-  for DIR in "${DIRS}"; do
+  for DIR in "${DIRS[@]}"; do
     if [ -d "$DIR" ]; then
       info_msg "Removing existing directory: $DIR"
       rm -rf "$DIR" 
