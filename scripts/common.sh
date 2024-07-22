@@ -296,23 +296,38 @@ function create_filesystems(){
  yes | mkfs.fat -F32 ${DISK}p1 
  yes | mkfs.ext4 ${DISK}p2
  yes | mkfs.btrfs -L root /dev/mapper/${VGROUP}-root
- yes | mkfs.btrfs -L home /dev/mapper/${VGROUP}-home
+ yes | mkfs.btrfs -L home /dev/mappper/${VGROUP}-home
 
   mkswap /dev/mapper/${VGROUP}-swap
   swapon /dev/mapper/${VGROUP}-swap
 
   success_feedback "Filesystems created for $DISK. Moving on"
+
+}
+
+function making_dirs(){
+info_msg "Making directories" 
+  ls /mnt
+  DIRS=("/mnt/home" "/mnt/boot" "/mnt/boot/efi")
+
+  for DIR in "${DIRS[@]}"; do
+    if [ -d "$DIR" ]; then
+      info_msg "Removing existing directory: $DIR"
+      rm -rf "$DIR" 
+    fi
+    info_msg "Creating directory: $DIR"
+    mkdir -p "$DIR"
+    ls /mnt
+  done
+ls /mnt
+info_msg "Moving on."
+
+
 }
 
 function mount_filesystems(){
   info_msg "Mounting filesystems"
-
-  mkdir -p /mnt/{home,boot}
-  mkdir -p /mnt/boot/efi
  
-  info_msg | sleep 2
-
-  ls /mnt
   mount /dev/mapper/${VGROUP}-root /mnt
   mount /dev/mapper/${VGROUP}-home /mnt/home
   mount ${DISK}p2 /mnt/boot
