@@ -298,7 +298,7 @@ function create_filesystems(){
  yes | mkfs.fat -F32 ${DISK}p1 
  yes | mkfs.ext4 ${DISK}p2
  yes | mkfs.btrfs -L root /dev/mapper/${VGROUP}-root
- yes | mkfs.btrfs -L home /dev/mappper/${VGROUP}-home
+ yes | mkfs.btrfs -L home /dev/mapper/${VGROUP}-home
 
   mkswap /dev/mapper/${VGROUP}-swap
   swapon /dev/mapper/${VGROUP}-swap
