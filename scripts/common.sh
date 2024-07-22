@@ -58,23 +58,6 @@ check_uefi() {
 }
 
 
-# Function to get username input
-function get_username() {
-    while true; do
-        info_prg "Enter the username [default: $DEFAULT_USERNAME]: "
-        read -r USERNAME
-        USERNAME=${USERNAME:-$DEFAULT_USERNAME}
-        if [ -n "$USERNAME" ]; then
-            declare -g USERNAME=$USERNAME
-            success_feedback "username will be set to $USERNAME"
-            break
-        else
-            error_feedback "username is required!"
-        fi
-    done
-}
-
-
 
 # Function to get hostname input
 function get_hostname() {
