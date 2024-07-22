@@ -23,6 +23,7 @@ function error_feedback() {
 }
 
 unmount_all_mnt() {
+  partprobe
   
   # Get all mount points starting with /mnt
   MOUNT_POINTS=$(mount | grep ' /mnt' | awk '{print $3}' | sort -r)
