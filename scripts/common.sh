@@ -3,6 +3,13 @@ LOGFILE="/var/log/ezinstall-arch-btw.log"
 # Load defaults
 source ./conf/defaults.conf
 
+ # Remove myself
+self_remove() {
+  cd ~/
+  rm -rf ~/ezinstall-arch-btw
+}
+
+
 # Function to show progress with bold, italic, and purple text
 function info_msg() {
 
@@ -228,6 +235,7 @@ function wipe_disk() {
         sgdisk --zap-all $DISK
         sgdisk -o $DISK
         info_msg | partprobe
+        self_remove 
             exit
         fi
     else

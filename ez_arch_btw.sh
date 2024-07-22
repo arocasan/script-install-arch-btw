@@ -39,12 +39,6 @@ wipe_disk
 
 # Configure file system
 conf_filesystem
-
- # Remove myself
-self_remove() {
-  rm -rf ~/ezinstall-arch-btw
-}
-
 # Use the captured inputs for other operations
 echo -e "\033[32mDisk: $DISK\033[0m"
 echo -e "\033[32mHostname: $ARCH_HOSTNAME\033[0m"
