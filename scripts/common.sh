@@ -240,10 +240,10 @@ function create_lvm(){
 function create_filesystems(){
   info_msg "Creating filesystems for $DISK"
 
-  mkfs.fat -F32 ${DISK}p1 
-  mkfs.ext4 ${DISK}p2
-  mkfs.brtfs -L root /dev/mapper/${VGROUP}-root
-  mkfs.brtfs -L home /dev/mappper/${VGROUP}-home
+ yes | mkfs.fat -F32 ${DISK}p1 
+ yes | mkfs.ext4 ${DISK}p2
+ yes | mkfs.btrfs -L root /dev/mapper/${VGROUP}-root
+ yes | mkfs.btrfs -L home /dev/mappper/${VGROUP}-home
 
   mkswap /dev/mapper/${VGROUP}-swap
   swapon /dev/mapper/${VGROUP}-swap
