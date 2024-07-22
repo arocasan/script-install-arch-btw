@@ -1,5 +1,5 @@
 #!/bin/bash
-
+LOGFILE="/var/log/ezinstall-arch-btw.log"
 # Load defaults
 source ./conf/defaults.conf
 
@@ -9,6 +9,7 @@ function info_msg() {
     echo -e "\033[94m$1\033[0m" 
 
 }
+exec > >(tee -a "$LOGFILE") 2>&1
 
 # Function to provide success feedback with  bold, italic, and green text
 function success_feedback() {
