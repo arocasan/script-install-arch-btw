@@ -119,29 +119,24 @@ function get_password() {
 
         info_prg -n "Enter the password for $prompt_message: "
         read -s PASSWORD
-        echo
         if [ -z "$PASSWORD" ]; then 
             error_feedback "Password is required!"
         fi
 
         info_prg -n "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
-        echo
 
         if [ "$PASSWORD" == "$PASSWORD_CONFIRM" ]; then
             declare -g $password_var=$PASSWORD
             break
         else
             error_feedback "Passwords do not match. Please try again."
-
-
         fi
     done
 }
 
 # Function to get the disk input from the user
 function get_disk() {
-
     local disks
     disks=$(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram')
     local disk_list=()
@@ -156,9 +151,9 @@ function get_disk() {
 
     while true; do
         echo -n "Enter the number corresponding to the disk (e.g., 1): "
-        read -r selected_disk
-        if [[ "$selected_disk" =~ ^[1-9][0-9]*$ ]] && [ "$disk_choice" -le "${#disk_list[@]}" ]; then
-            DISK=$(echo "${disk_list[$((selected_disk - 1))]}" | awk '{print $1}')
+        read -r disk_choice
+        if [[ "$disk_choice" =~ ^[0-9]+$ ]] && [ "$disk_choice" -ge 1 ] && [ "$disk_choice" -le "${#disk_list[@]}" ]; then
+            DISK=$(echo "${disk_list[$((disk_choice - 1))]}" | awk '{print $1}')
             declare -g DISK=$DISK
             break
         else
@@ -166,6 +161,7 @@ function get_disk() {
         fi
     done
 }
+
 # Function to wipe disk
 function wipe_disk() {
     info_prg "Do you want to wipe the disk $DISK? This action is irreversible. (yes/no)"
