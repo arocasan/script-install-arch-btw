@@ -117,13 +117,13 @@ function get_password() {
     local prompt_message=$2
     while true; do
 
-        info_prg -n "Enter the password for $prompt_message: "
+        info_prg "Enter the password for $prompt_message: "
         read -s PASSWORD
         if [ -z "$PASSWORD" ]; then 
             error_feedback "Password is required!"
         fi
 
-        info_prg -n "Confirm the password for $prompt_message: "
+        info_prg "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
 
         if [ "$PASSWORD" == "$PASSWORD_CONFIRM" ]; then
