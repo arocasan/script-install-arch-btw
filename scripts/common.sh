@@ -124,7 +124,7 @@ function get_password() {
             error_feedback "Password is required!"
         fi
 
-        info_prg  "Confirm the password for $prompt_message: "
+        info_prg -n "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
         echo
 
