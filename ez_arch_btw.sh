@@ -9,6 +9,8 @@ fi
 # Load configuration
 source ./scripts/common.sh
 
+# Load install functions
+source ./scripts/install.sh
 
 # Verify system is booted into UEFI mode
 show_logo
@@ -16,7 +18,7 @@ check_uefi
 
 # Install packages nessecary for the script
 show_logo
-install_packages ez_arch_btw.txt
+install_packages ez_arch_btw.conf
 
 # Get user input
 show_logo
@@ -39,6 +41,10 @@ wipe_disk
 
 # Configure file system
 conf_filesystem
+
+# Install Arch btw..
+install_arch_btw
+
 # Use the captured inputs for other operations
 echo -e "\033[32mDisk: $DISK\033[0m"
 echo -e "\033[32mHostname: $ARCH_HOSTNAME\033[0m"
