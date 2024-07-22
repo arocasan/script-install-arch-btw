@@ -17,7 +17,6 @@ check_uefi
 # Install packages nessecary for the script
 show_logo
 install_packages ez_arch_btw.txt
-making_dirs
 
 # Get user input
 show_logo
