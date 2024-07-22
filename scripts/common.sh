@@ -253,9 +253,9 @@ function create_lvm(){
 
   pvcreate /dev/mapper/$LVM_NAME
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
-  lvcreate -n swap -L $SWAPGB $VGROUP -f
-  lvcreate -n root -L $ROOTGB $VGROUP -f
-  lvcreate -n home -l $HOMEGB $VGROUP -f
+  lvcreate -n swap -L $SWAPGB $VGROUP 
+  lvcreate -n root -L $ROOTGB $VGROUP 
+  lvcreate -n home -l $HOMEGB $VGROUP 
   
   info_msg | pvscan
   info_msg | vgscan
