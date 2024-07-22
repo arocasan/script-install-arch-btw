@@ -63,11 +63,11 @@ check_uefi() {
 function get_hostname() {
     while true; do
         info_prg "Enter the hostname [default: $DEFAULT_HOSTNAME]: "
-        read -r HOSTNAME
-        HOSTNAME=${HOSTNAME:-$DEFAULT_HOSTNAME}
-        if [ -n "$HOSTNAME" ]; then
-            declare -g HOSTNAME=$HOSTNAME
-            success_feedback "Hostname will be set to $HOSTNAME"
+        read -r ARCH_HOSTNAME
+        ARCH_HOSTNAME=${ARCH_HOSTNAME:-$DEFAULT_HOSTNAME}
+        if [ -n "$ARCH_HOSTNAME" ]; then
+            declare -g ARCH_HOSTNAME=$ARCH_HOSTNAME
+            success_feedback "Hostname will be set to $ARCH_HOSTNAME"
             break
         else
             error_feedback "Hostname is required!"
@@ -115,7 +115,7 @@ function get_username() {
         ARCH_USERNAME=${ARCH_USERNAME:-$DEFAULT_USERNAME}
         if [ -n "$ARCH_USERNAME" ]; then
             declare -g ARCH_USERNAME=$ARCH_USERNAME
-            success_feedback "Username will be $ARCH_USERNAME for $HOSTNAME"
+            success_feedback "Username will be $ARCH_USERNAME for $ARCH_HOSTNAME"
             break
         else
             error_feedback "Username is required!"
