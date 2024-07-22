@@ -249,7 +249,7 @@ function create_lvm(){
   info_msg "Configuring LVM and encryption for ${DISK}p3"
   modprobe dm-crypt && modprobe dm-mod
   echo "$LUKS_PWD" | cryptsetup luksFormat -v -s 512 -h sha512 ${DISK}p3
-  echo "$LUKS_PWD" | cryptsetup open ${LVM_NAME}
+  echo "$LUKS_PWD" | cryptsetup open ${DISK}3 ${LVM_NAME}
 
   pvcreate /dev/mapper/$LVM_NAME
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
