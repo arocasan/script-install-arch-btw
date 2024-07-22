@@ -26,15 +26,14 @@ unmount_all_mnt() {
   
   # Get all mount points starting with /mnt
   MOUNT_POINTS=$(mount | grep ' /mnt' | awk '{print $3}' | sort -r)
-info_msg "What gives $MOUNT_POINTS"
   # Loop through each mount point and unmount
   for MOUNT_POINT in $MOUNT_POINTS; do
-    echo "Unmounting $MOUNT_POINT"
+    info_msg "Unmounting $MOUNT_POINT"
     sudo umount "$MOUNT_POINT"
     if [ $? -eq 0 ]; then
-      echo "$MOUNT_POINT unmounted successfully"
+      info_msg "$MOUNT_POINT unmounted successfully"
     else
-      echo "Failed to unmount $MOUNT_POINT"
+      error_feedback "Failed to unmount $MOUNT_POINT"
     fi
   done
 }
@@ -60,7 +59,7 @@ install_packages() {
 
 # Function to display an ASCII logo
 show_logo(){
-echo "Placholder logo"
+info_msg "Placholder logo"
 }
 
 # Function to verify UEFI mode
@@ -160,7 +159,7 @@ function set_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
-        echo "Enter the password for $prompt_message: "
+        info_msg
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
@@ -168,7 +167,7 @@ function set_password() {
             continue
         fi
 
-        echo "Confirm the password for $prompt_message: "
+        info_msg "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
         echo
 
@@ -188,7 +187,7 @@ function set_disk() {
     local disk_list=()
     local index=1
 
-    echo "Available disks:"
+    info_msg "Available disks:"
     while IFS= read -r line; do
         disk_list+=("$line")
         echo "$index. $line"
@@ -196,14 +195,14 @@ function set_disk() {
     done <<< "$disks"
 
     while true; do
-        echo -n "Enter the number corresponding to the disk (e.g., 1): "
+        info_msg -n "Enter the number corresponding to the disk (e.g., 1): "
         read -r disk_choice
         if [[ "$disk_choice" =~ ^[0-9]+$ ]] && [ "$disk_choice" -ge 1 ] && [ "$disk_choice" -le "${#disk_list[@]}" ]; then
             DISK=$(echo "${disk_list[$((disk_choice - 1))]}" | awk '{print $1}')
             declare -g DISK=/dev/$DISK
             break
         else
-            echo "Error: Invalid choice. Please enter a number between 1 and ${#disk_list[@]}."
+            error_feedback "Error: Invalid choice. Please enter a number between 1 and ${#disk_list[@]}."
         fi
     done
 }
@@ -230,7 +229,7 @@ function wipe_disk() {
 # Function to create disk partitions
 
 function create_disk_partitions(){
-    
+    unmount_all_mnt
     info_msg "Preparing partitions for $DISK"
 
     sgdisk -n 1::+2G -t 1:ef00 $DISK
@@ -254,9 +253,9 @@ function create_lvm(){
 
   pvcreate /dev/mapper/$LVM_NAME
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
-  lvcreate -n swap -L $SWAPGB $VGROUP -f
-  lvcreate -n root -L $ROOTGB $VGROUP -f
-  lvcreate -n home -l $HOMEGB $VGROUP -f
+  lvcreate -n swap -L $SWAPGB $VGROUP 
+  lvcreate -n root -L $ROOTGB $VGROUP 
+  lvcreate -n home -l $HOMEGB $VGROUP 
   
   info_msg | pvscan
   info_msg | vgscan
@@ -283,7 +282,7 @@ function create_filesystems(){
 
 function mount_filesystems(){
   info_msg "Mounting filesystems"
-  
+  unmount_all_mnt
   DIRS=("/mnt/home","/mnt/boot","/mnt/boot/efi")
 
   for DIR in "${DIRS}"; do
