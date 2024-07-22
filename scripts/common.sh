@@ -237,9 +237,9 @@ function create_lvm(){
 
   pvcreate /dev/mapper/$LVM_NAME
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
-  lvcreate -n swap -L $SWAPGB $VGROUP
-  lvcreate -n root -L $ROOTGB $VGROUP
-  lvcreate -n home -l $HOMEGB $VGROUP
+  lvcreate -n swap -L $SWAPGB $VGROUP -f
+  lvcreate -n root -L $ROOTGB $VGROUP -f
+  lvcreate -n home -l $HOMEGB $VGROUP -f
   
   info_msg | pvscan
   info_msg | vgscan
@@ -265,9 +265,18 @@ function create_filesystems(){
 
 function mount_filesystems(){
   info_msg "Mounting filesystems"
+  
+  DIRS=("/mnt/home","/mnt/boot","/mnt/boot/efi")
 
-  mkdir -p /mnt/{home,boot}
-  mkdir /mnt/boot/efi
+  for DIR in "${DIRS}"; do
+    if [ -d "$DIR" ]; then
+      info_msg "Removing existing directory: $DIR"
+      rm -rf "$DIR" 
+    fi
+    info_msg "Creating directory: $DIR"
+  done
+
+
 
   mount /dev/mapper/${VGROUP}-root /mnt
   mount /dev/mapper/${VGROUP}-home /mnt/home
