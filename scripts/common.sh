@@ -57,6 +57,25 @@ check_uefi() {
     fi
 }
 
+
+# Function to get username input
+function get_username() {
+    while true; do
+        info_prg "Enter the username [default: $DEFAULT_USERNAME]: "
+        read -r USERNAME
+        USERNAME=${USERNAME:-$DEFAULT_USERNAME}
+        if [ -n "$USERNAME" ]; then
+            declare -g USERNAME=$USERNAME
+            success_feedback "username will be set to $USERNAME"
+            break
+        else
+            error_feedback "username is required!"
+        fi
+    done
+}
+
+
+
 # Function to get hostname input
 function get_hostname() {
     while true; do
@@ -182,7 +201,7 @@ function get_disk() {
         read -r disk_choice
         if [[ "$disk_choice" =~ ^[0-9]+$ ]] && [ "$disk_choice" -ge 1 ] && [ "$disk_choice" -le "${#disk_list[@]}" ]; then
             DISK=$(echo "${disk_list[$((disk_choice - 1))]}" | awk '{print $1}')
-            declare -g DISK=$DISK
+            declare -g DISK=/dev/$DISK
             break
         else
             echo "Error: Invalid choice. Please enter a number between 1 and ${#disk_list[@]}."

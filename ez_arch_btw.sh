@@ -1,4 +1,5 @@
 #!/bin/bash
+function get_password() 
 
 # Ensure script is run as root
 if [[ $EUID -ne 0 ]]; then
@@ -48,3 +49,5 @@ echo -e "\033[32mTimezone: $TIMEZONE\033[0m"
 echo -e "\033[32mLanguage: $LANGUAGE\033[0m"
 echo -e "\033[32mUsername: $ARCH_USERNAME\033[0m"
 echo -e "\033[32mUser shell: $USER_SHELL\033[0m"
+
+self_remove
