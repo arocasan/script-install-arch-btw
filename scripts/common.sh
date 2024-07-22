@@ -310,10 +310,6 @@ function mount_filesystems(){
   DIRS=("/mnt/home" "/mnt/boot" "/mnt/boot/efi")
 
   for DIR in "${DIRS[@]}"; do
-    if [ -d "$DIR" ]; then
-      info_msg "Removing existing directory: $DIR"
-      rm -rf "$DIR" 
-    fi
     info_msg "Creating directory: $DIR"
     mkdir -p "$DIR"
   done
