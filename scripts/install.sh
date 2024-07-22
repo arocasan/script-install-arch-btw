@@ -1,7 +1,6 @@
 # Load common functions
 source ./scripts/common.sh
 
-echo "yoyoyo"
 
 # Install arch btw...
 function install_arch_btw() {
