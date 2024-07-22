@@ -9,7 +9,6 @@ function info_msg() {
     echo -e "\033[94m$1\033[0m" 
 
 }
-exec > >(tee -a "$LOGFILE") 2>&1
 
 # Function to provide success feedback with  bold, italic, and green text
 function success_feedback() {
@@ -250,9 +249,8 @@ function create_lvm(){
   info_msg "Configuring LVM and encryption for ${DISK}p3"
   modprobe dm-crypt && modprobe dm-mod
   echo "$LUKS_PWD" | cryptsetup luksFormat -v -s 512 -h sha512 ${DISK}p3
-  echo "$LUKS_PWD" | cryptsetup open ${DISK}p3
+  echo "$LUKS_PWD" | cryptsetup open ${LVM_NAME}
 
-  pvcreate /dev/mapper/luks_lvm
   pvcreate /dev/mapper/$LVM_NAME
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
   lvcreate -n swap -L $SWAPGB $VGROUP -f
