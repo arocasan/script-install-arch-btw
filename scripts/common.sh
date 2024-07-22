@@ -281,10 +281,12 @@ function create_lvm(){
   lvcreate -n root -L $ROOTGB $VGROUP 
   lvcreate -n home -l $HOMEGB $VGROUP 
   
+  vgchange -ay
+
   info_msg | pvscan
   info_msg | vgscan
   info_msg | lvscan
-  info_msg | vgchange -ay
+
   info_msg | lvdisplay
 }
 
