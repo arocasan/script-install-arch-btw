@@ -310,8 +310,9 @@ function create_filesystems(){
 function making_dirs(){
 
 info_msg "Making directories" 
+
 mkdir -p /mnt/{home,boot}
-mkdir -p /mnt/boot/efi
+mkdir  /mnt/boot/efi
 info_msg "Moving on."
 ls /mnt
 
