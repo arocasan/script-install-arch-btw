@@ -115,8 +115,8 @@ function get_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
-        info_prg -n "Enter the password for $prompt_message: "
 
+        info_prg -n "Enter the password for $prompt_message: "
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
@@ -140,6 +140,7 @@ function get_password() {
 
 # Function to get the disk input from the user
 function get_disk() {
+
     local disks
     disks=$(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram')
     local disk_list=()
