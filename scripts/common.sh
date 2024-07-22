@@ -53,24 +53,6 @@ check_uefi() {
     fi
 }
 
-
-
-# Function to get hostname input
-function get_hostname() {
-  while true; do
-    info_prg "Enter the hostname: "
-    read HOSTNAME
-    if [ -n "$HOSTNAME" ]; then
-
-    declare -g HOSTNAME=$HOSTNAME
-    break 
-  else
-
-        error_feedback "Hostname is required!"
-    fi
-  done
-}
-
 # Function to get hostname input
 function get_hostname() {
     while true; do
@@ -171,9 +153,6 @@ function get_password() {
     done
 }
 
-
-
-# Function to get the disk input from the user
 function get_disk() {
     local disks
     disks=$(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram')
@@ -218,105 +197,7 @@ function wipe_disk() {
     fi
 }
 
-# Function to get hostname input
-function get_hostname() {
-    while true; do
-        info_prg "Enter the hostname [default: $DEFAULT_HOSTNAME]: "
-        read -r HOSTNAME
-        HOSTNAME=${HOSTNAME:-$DEFAULT_HOSTNAME}
-        if [ -n "$HOSTNAME" ]; then
-            declare -g HOSTNAME=$HOSTNAME
-            break
-        else
-            error_feedback "Hostname is required!"
-        fi
-    done
-}
 
-# Function to get timezone input
-function get_timezone() {
-    while true; do
-        info_prg "Enter the timezone (e.g., Europe/Stockholm) [default: $DEFAULT_TIMEZONE]: "
-        read -r TIMEZONE
-        TIMEZONE=${TIMEZONE:-$DEFAULT_TIMEZONE}
-        if [ -n "$TIMEZONE" ]; then
-            declare -g TIMEZONE=$TIMEZONE
-            break
-        else
-            error_feedback "Timezone is required!"
-        fi
-    done
-}
-
-# Function to get language input
-function get_language() {
-    while true; do
-        info_prg "Enter the language (e.g., en_US.UTF-8) [default: $DEFAULT_LANGUAGE]: "
-        read -r LANGUAGE
-        LANGUAGE=${LANGUAGE:-$DEFAULT_LANGUAGE}
-        if [ -n "$LANGUAGE" ]; then
-            declare -g LANGUAGE=$LANGUAGE
-            break
-        else
-            error_feedback "Language is required!"
-        fi
-    done
-}
-
-# Function to get username input
-function get_username() {
-    while true; do
-        info_prg "Enter the username [default: $DEFAULT_USERNAME]: "
-        read -r ARCH_USERNAME
-        ARCH_USERNAME=${ARCH_USERNAME:-$DEFAULT_USERNAME}
-        if [ -n "$ARCH_USERNAME" ]; then
-            declare -g ARCH_USERNAME=$ARCH_USERNAME
-            break
-        else
-            error_feedback "Username is required!"
-        fi
-    done
-}
-
-# Function to get user shell input
-function get_user_shell() {
-    while true; do
-        info_prg "Enter the shell for the user (e.g., /bin/zsh) [default: $DEFAULT_SHELL]: "
-        read -r USER_SHELL
-        USER_SHELL=${USER_SHELL:-$DEFAULT_SHELL}
-        if [ -n "$USER_SHELL" ]; then
-            declare -g USER_SHELL=$USER_SHELL
-            break
-        else
-            error_feedback "User shell is required!"
-        fi
-    done
-}
-
-# Reusable function to get password input and set it to a specified variable
-function get_password() {
-    local password_var=$1
-    local prompt_message=$2
-    while true; do
-        echo "Enter the password for $prompt_message: "
-        read -s PASSWORD
-        echo
-        if [ -z "$PASSWORD" ]; then 
-            error_feedback "Password is required!"
-        fi
-
-        echo "Confirm the password for $prompt_message: "
-        read -s PASSWORD_CONFIRM
-        echo
-
-        if [ "$PASSWORD" == "$PASSWORD_CONFIRM" ]; then
-            declare -g $password_var=$PASSWORD
-            break
-        else
-            error_feedback "Passwords do not match. Please try again."
-        fi
-    done
-}
 
 # Main function to get all user inputs
 function get_user_inputs() {
