@@ -320,13 +320,12 @@ ls /mnt
 
 function mount_filesystems(){
   info_msg "Mounting filesystems"
-making_dirs
- info_msg "Directories created:"
-  ls /mnt
-  ls /mnt/boot
+
   mount /dev/mapper/${VGROUP}-root /mnt
+  making_dirs
   mount /dev/mapper/${VGROUP}-home /mnt/home
   mount ${DISK}p2 /mnt/boot
+  making_dirs
   mount ${DISK}p1 /mnt/boot/efi
 
   info_msg "Filesystems mounted. Moving on."
