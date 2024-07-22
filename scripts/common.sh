@@ -68,6 +68,7 @@ function get_hostname() {
 
         error_feedback "Hostname is required!"
     fi
+  done
 }
 
 # Function to get timezone input
