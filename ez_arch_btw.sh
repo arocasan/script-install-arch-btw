@@ -21,6 +21,7 @@ install_packages ez_arch_btw.txt
 
 # Get user input
 show_logo
+get_username
 get_hostname
 get_timezone
 get_language
