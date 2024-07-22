@@ -237,13 +237,14 @@ function create_lvm(){
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
   lvcreate -n swap -L $SWAPGB $VGROUP
   lvcreate -n root -L $ROOTGB $VGROUP
-  lvcreate -n home -L $HOMEGB $VGROUP
+  lvcreate -n home -l $HOMEGB $VGROUP
 
 }
 
 function create_filesystems(){
   info_msg "Creating filesystems for $DISK"
-  umount -a
+  umount -A --recursive /mnt
+
  yes | mkfs.fat -F32 ${DISK}p1 
  yes | mkfs.ext4 ${DISK}p2
  yes | mkfs.btrfs -L root /dev/mapper/${VGROUP}-root
