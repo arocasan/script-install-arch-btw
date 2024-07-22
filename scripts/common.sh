@@ -23,9 +23,10 @@ function error_feedback() {
 }
 
 unmount_all_mnt() {
+  
   # Get all mount points starting with /mnt
   MOUNT_POINTS=$(mount | grep ' /mnt' | awk '{print $3}' | sort -r)
-
+info_msg "What gives $MOUNT_POINTS"
   # Loop through each mount point and unmount
   for MOUNT_POINT in $MOUNT_POINTS; do
     echo "Unmounting $MOUNT_POINT"
