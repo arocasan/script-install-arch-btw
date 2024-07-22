@@ -306,15 +306,10 @@ function create_filesystems(){
 
 function mount_filesystems(){
   info_msg "Mounting filesystems"
-  
-  DIRS=("/mnt/home" "/mnt/boot" "/mnt/boot/efi")
 
-  for DIR in "${DIRS[@]}"; do
-    info_msg "Creating directory: $DIR"
-    mkdir -p "$DIR"
-  done
-
-
+  mkdir -p /mnt/{home,boot}
+  mkdir -p /mnt/boot/efi
+ 
 
   mount /dev/mapper/${VGROUP}-root /mnt
   mount /dev/mapper/${VGROUP}-home /mnt/home
