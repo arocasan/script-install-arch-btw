@@ -199,7 +199,7 @@ function wipe_disk() {
 
     if [[ $wipe_confirmation == "yes" ]]; then
         info_msg "Wiping disk $DISK..."
-        umount -A --recusive /mnt
+        umount -A --recursive /mnt
         sgdisk --zap-all $DISK
         if [ $? -eq 0 ]; then
             success_feedback "Disk $DISK wiped successfully."
