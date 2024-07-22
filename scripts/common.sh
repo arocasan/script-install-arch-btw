@@ -59,7 +59,7 @@ install_packages() {
 
 # Function to display an ASCII logo
 show_logo(){
-info_msg "Placholder logo"
+echo "Placholder logo"
 }
 
 # Function to verify UEFI mode
@@ -159,7 +159,7 @@ function set_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
-        info_msg
+        info_msg "Enter the password for $prompt_message: "
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
@@ -187,7 +187,7 @@ function set_disk() {
     local disk_list=()
     local index=1
 
-    info_msg "Available disks:"
+    echo "Available disks:"
     while IFS= read -r line; do
         disk_list+=("$line")
         echo "$index. $line"
@@ -195,14 +195,14 @@ function set_disk() {
     done <<< "$disks"
 
     while true; do
-        info_msg -n "Enter the number corresponding to the disk (e.g., 1): "
+        echo -n "Enter the number corresponding to the disk (e.g., 1): "
         read -r disk_choice
         if [[ "$disk_choice" =~ ^[0-9]+$ ]] && [ "$disk_choice" -ge 1 ] && [ "$disk_choice" -le "${#disk_list[@]}" ]; then
             DISK=$(echo "${disk_list[$((disk_choice - 1))]}" | awk '{print $1}')
             declare -g DISK=/dev/$DISK
             break
         else
-            error_feedback "Error: Invalid choice. Please enter a number between 1 and ${#disk_list[@]}."
+            echo "Error: Invalid choice. Please enter a number between 1 and ${#disk_list[@]}."
         fi
     done
 }
@@ -229,7 +229,7 @@ function wipe_disk() {
 # Function to create disk partitions
 
 function create_disk_partitions(){
-    unmount_all_mnt
+    
     info_msg "Preparing partitions for $DISK"
 
     sgdisk -n 1::+2G -t 1:ef00 $DISK
@@ -251,11 +251,12 @@ function create_lvm(){
   echo "$LUKS_PWD" | cryptsetup luksFormat -v -s 512 -h sha512 ${DISK}p3
   echo "$LUKS_PWD" | cryptsetup open ${DISK}p3
 
+  pvcreate /dev/mapper/luks_lvm
   pvcreate /dev/mapper/$LVM_NAME
   vgcreate $VGROUP /dev/mapper/$LVM_NAME
-  lvcreate -n swap -L $SWAPGB $VGROUP 
-  lvcreate -n root -L $ROOTGB $VGROUP 
-  lvcreate -n home -l $HOMEGB $VGROUP 
+  lvcreate -n swap -L $SWAPGB $VGROUP -f
+  lvcreate -n root -L $ROOTGB $VGROUP -f
+  lvcreate -n home -l $HOMEGB $VGROUP -f
   
   info_msg | pvscan
   info_msg | vgscan
@@ -282,7 +283,7 @@ function create_filesystems(){
 
 function mount_filesystems(){
   info_msg "Mounting filesystems"
-  unmount_all_mnt
+  
   DIRS=("/mnt/home","/mnt/boot","/mnt/boot/efi")
 
   for DIR in "${DIRS}"; do
