@@ -237,6 +237,34 @@ function create_lvm(){
 
 }
 
+function create_filesystems(){
+  info_msg "Creating filesystems for $DISK"
+
+  mkfs.fat -F32 ${DISK}p1 
+  mkfs.ext4 ${DISK}p2
+  mkfs.brtfs -L root /dev/mapper/${VGROUP}-root
+  mkfs.brtfs -L home /dev/mappper/${VGROUP}-home
+
+  mkswap /dev/mapper/${VGROUP}-swap
+  swapon /dev/mapper/${VGROUP}-swap
+
+  success_feedback "Filesystems created for $DISK. Moving on"
+}
+
+function mount_filesystems(){
+  info_msg "Mounting filesystems"
+
+  mkdir -p /mnt/{home,boot}
+  mkdir /mnt/boot/efi
+
+  mount /dev/mapper/${VGROUP}-root /mnt
+  mount /dev/mapper/${VGROUP}-home /mnt/home
+  mount ${DISK}p2 /mnt/boot
+  mount ${DISK}p1 /mnt/boot/efi
+
+  info_msg "Filesystems mounted. Moving on."
+  
+}
 
 # Main function to get all user inputs
 function set_user_inputs() {
@@ -253,4 +281,7 @@ function set_user_inputs() {
 
 function conf_filesystem(){
   create_disk_partitions
+  create_lvm
+  create_filesystems
+  mount_filesystems
 }
