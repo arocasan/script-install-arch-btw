@@ -310,7 +310,9 @@ function mount_filesystems(){
   mkdir -p /mnt/{home,boot}
   mkdir -p /mnt/boot/efi
  
+  info_msg | sleep 2
 
+  ls /mnt
   mount /dev/mapper/${VGROUP}-root /mnt
   mount /dev/mapper/${VGROUP}-home /mnt/home
   mount ${DISK}p2 /mnt/boot
