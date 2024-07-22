@@ -137,13 +137,14 @@ function get_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
+        clear
         echo "Enter the password for $prompt_message: "
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
             error_feedback "Password is required!"
         fi
-
+        clear
         echo "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
         echo
@@ -152,6 +153,7 @@ function get_password() {
             declare -g $password_var=$PASSWORD
             break
         else
+            clear
             error_feedback "Passwords do not match. Please try again."
         fi
     done
