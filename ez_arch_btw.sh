@@ -42,7 +42,10 @@ wipe_disk
 # Configure file system
 conf_filesystem
 
+
 # Install Arch btw..
+#
+info_msg "Installing Arch btw"
 install_arch_btw
 
 # Use the captured inputs for other operations
