@@ -36,7 +36,15 @@ get_disk
 show_logo
 wipe_disk
 
-# Remove myself
+ # Remove myself
 self_remove() {
   rm -rf ~/ezinstall-arch-btw
 }
+
+# Use the captured inputs for other operations
+echo -e "\033[32mDisk: $DISK\033[0m"
+echo -e "\033[32mHostname: $HOSTNAME\033[0m"
+echo -e "\033[32mTimezone: $TIMEZONE\033[0m"
+echo -e "\033[32mLanguage: $LANGUAGE\033[0m"
+echo -e "\033[32mUsername: $ARCH_USERNAME\033[0m"
+echo -e "\033[32mUser shell: $USER_SHELL\033[0m"

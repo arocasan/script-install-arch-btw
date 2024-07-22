@@ -6,7 +6,7 @@ source ./conf/defaults.conf
 # Function to show progress with bold, italic, and purple text
 function info_prg() {
 
-    echo -e "\033[1;3;34m$1\033[0m" 
+    echo -e "\033[1;35m$1\033[0m" 
 
 }
 
@@ -65,6 +65,7 @@ function get_hostname() {
         HOSTNAME=${HOSTNAME:-$DEFAULT_HOSTNAME}
         if [ -n "$HOSTNAME" ]; then
             declare -g HOSTNAME=$HOSTNAME
+            success_feedback "Hostname will be set to $HOSTNAME"
             break
         else
             error_feedback "Hostname is required!"
@@ -80,6 +81,7 @@ function get_timezone() {
         TIMEZONE=${TIMEZONE:-$DEFAULT_TIMEZONE}
         if [ -n "$TIMEZONE" ]; then
             declare -g TIMEZONE=$TIMEZONE
+            success_feedback "Timezone will be set to $TIMEZONE"
             break
         else
             error_feedback "Timezone is required!"
@@ -95,6 +97,7 @@ function get_language() {
         LANGUAGE=${LANGUAGE:-$DEFAULT_LANGUAGE}
         if [ -n "$LANGUAGE" ]; then
             declare -g LANGUAGE=$LANGUAGE
+            success_feedback "Language will be set to $LANGUAGE"
             break
         else
             error_feedback "Language is required!"
@@ -110,6 +113,7 @@ function get_username() {
         ARCH_USERNAME=${ARCH_USERNAME:-$DEFAULT_USERNAME}
         if [ -n "$ARCH_USERNAME" ]; then
             declare -g ARCH_USERNAME=$ARCH_USERNAME
+            success_feedback "Username will be $ARCH_USERNAME for $HOSTNAME"
             break
         else
             error_feedback "Username is required!"
@@ -125,6 +129,7 @@ function get_user_shell() {
         USER_SHELL=${USER_SHELL:-$DEFAULT_SHELL}
         if [ -n "$USER_SHELL" ]; then
             declare -g USER_SHELL=$USER_SHELL
+            success_feedback "User shell will be $USER_SHELL for $ARCH_USERNAME"
             break
         else
             error_feedback "User shell is required!"
@@ -137,28 +142,28 @@ function get_password() {
     local password_var=$1
     local prompt_message=$2
     while true; do
-        clear
         echo "Enter the password for $prompt_message: "
         read -s PASSWORD
         echo
         if [ -z "$PASSWORD" ]; then 
             error_feedback "Password is required!"
+            continue
         fi
-        clear
+
         echo "Confirm the password for $prompt_message: "
         read -s PASSWORD_CONFIRM
         echo
 
         if [ "$PASSWORD" == "$PASSWORD_CONFIRM" ]; then
-            declare -g $password_var=$PASSWORD
+            declare -g $password_var="$PASSWORD"
+            success_feedback "Password set successfully for $prompt_message"
             break
         else
-            clear
             error_feedback "Passwords do not match. Please try again."
         fi
     done
 }
-
+ 
 function get_disk() {
     local disks
     disks=$(lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\|ram')
