@@ -125,6 +125,8 @@ EOF
     git clone https://aur.archlinux.org/yay.git
     cd yay
     makepkg -si --noconfirm
+EOF
+arch-chroot /mnt /bin/bash <<EOF
     echo "Reverting nopasswd for wheels"
     sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
 EOF
