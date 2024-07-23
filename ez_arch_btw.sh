@@ -12,14 +12,10 @@ source ./scripts/common.sh
 # Load install functions
 source ./scripts/install.sh
 
-# PGK=$(read_packages_from_file "chroot_arch_btw.conf")
-# echo $PGK
 # Verify system is booted into UEFI mode
-show_logo
 check_uefi 
 
 # Install packages nessecary for the script
-show_logo
 install_packages ez_arch_btw.conf
 
 # Get user input
@@ -34,9 +30,7 @@ set_user_shell
 set_password "LUKS_PWD" "the luks pwd"
 
 # Set configuration
-show_logo
 set_disk
-
 
 # Wipe disk
 show_logo
@@ -45,18 +39,21 @@ wipe_disk
 # Configure file system
 conf_filesystem
 
-
 # Install Arch btw..
-#
-info_msg "Installing Arch btw"
-install_arch_btw
-
+info_msg "Installing Arch btw.."
+info_msg "Configuration:"
 # Use the captured inputs for other operations
-echo -e "\033[32mDisk: $DISK\033[0m"
-echo -e "\033[32mHostname: $ARCH_HOSTNAME\033[0m"
-echo -e "\033[32mTimezone: $TIMEZONE\033[0m"
-echo -e "\033[32mLanguage: $LANGUAGE\033[0m"
-echo -e "\033[32mUsername: $ARCH_USERNAME\033[0m"
-echo -e "\033[32mUser shell: $USER_SHELL\033[0m"
+info_msg "Disk: $DISK"
+info_msg "Hostname: $ARCH_HOSTNAME"
+info_msg "Timezone: $TIMEZONE"
+info_msg "Language: $LANGUAGE" 
+info_msg "Username: $ARCH_USERNAME"
+info_msg "User shell: $USER_SHELL"
+info_msg "Volume group: $VGROUP"
+info_msg "Logic Volume: $LVM_NAME"
+info_msg "Swap size: ${SWAPGB}B"
+info_msg "Root size: ${ROOTGB}B"
+info_msg "Home size: ${HOMEGB}B"
 
-trap self_remove EXIT
+# Pacstrap and arch-chroot installations/configurations
+install_arch_btw

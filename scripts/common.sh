@@ -9,29 +9,23 @@ self_remove() {
   cd
 }
 
-
 # Function to show progress with bold, italic, and purple text
 function info_msg() {
-
     echo -e "\033[1;3;94m$1\033[0m" 
-
 }
 
 # Function to provide success feedback with  bold, italic, and green text
 function success_feedback() {
-
     echo -e "\n\033[1;3;92m$1\033[0m" 
 }
 
 # Function to provide error feedback with bold, italic, and red text
 function error_feedback() {
-
     echo -e "\n\033[1;3;91mError: $1\033[0m"
 }
 
 unmount_all_mnt() {
   partprobe
-  
   # Get all mount points starting with /mnt
   MOUNT_POINTS=$(mount | grep ' /mnt' | awk '{print $3}' | sort -r)
   # Loop through each mount point and unmount
@@ -63,11 +57,6 @@ install_packages() {
             info_msg "$package is already installed"
         fi
     done < "$package_file"
-}
-
-# Function to display an ASCII logo
-show_logo(){
-echo "Placholder logo"
 }
 
 # Function to verify UEFI mode
