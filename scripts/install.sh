@@ -40,9 +40,22 @@ read_packages_from_file() {
 
 
     echo "Updating user and system settings, i.e timezone"
+
+    echo "Update timezone to ${TIMEZONE}"
     ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
-    sed -i '/^#${LANGUAGE}/s^#//' /etc/locale.gen
+
+    echo "Update timesyncd.conf"
+    sed -i '/^#NTP=/s|^#||' /etc/systemd/timesyncd.conf
+    sed -i '/^NTP=/s|=.*|=0.arch.pool.ntp.org 1.arch.pool.ntp.org 2.arch.pool.ntp.org 3.arch.pool.ntp.org|' /etc/systemd/timesyncd.conf
+    sed -i '/^#FallbackNTP=/s|^#||' /etc/systemd/timesyncd.conf
+    sed -i '/^FallbackNTP=/s|=.*|=0.pool.ntp.org 1.pool.ntp.org|' /etc/systemd/timesyncd.conf
+    echo "timesyncd.conf updated"
+
+    sed -i '/^#${LOCALE}/s/^#//' /etc/locale.gen
     locale-gen
+
+
+
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
     echo "${ARCH_HOSTNAME}" > /etc/hostname
     (echo "${ROOT_PWD}"; echo "${ROOT_PWD}") | passwd
@@ -59,7 +72,6 @@ EOF
     echo "mkinitcpio HOOKS Updated"
     
     echo "Adding ${DISK}p3 as cryptdevice"
-    blkid ${DISK}p3 >> /etc/default/grub
     sed -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/s|"$| cryptdevice=UUID=$(blkid -s UUID -o value kid -s UUID -o value ${DISK}p3):${LVM_NAME} root=/dev/mapper/${VGROUP}-root"|' /etc/default/grub
     grep '^HOOKS=' /etc/mkinitcpio.conf
     echo "HOOK updated for ${DISK}p3"
@@ -80,12 +92,56 @@ EOF
     mkinitcpio -p linux
     echo "Ramdisks completed"
 
-
+    echo "Installing GRUB"
     grub-install --efi-directory=/boot/efi
+    echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
     grub-mkconfig -o /boot/efi/EFI/${VGROUP}/grub.cfg
 EOF
     success_feedback "System configured successfully."
+}
+
+# Function to handle post-installation steps
+install_completed() {
+    while true; do
+        read -p "Installation completed. Do you want to (1) Just exit, (2) Unmount all and reboot the system? (1/2): " choice
+        case $choice in
+            1)
+                info_msg "Exiting without reboot..."
+                exit 0
+                ;;
+            2)
+                # Function to handle post-installation steps
+install_completed() {
+    while true; do
+        read -p "Installation completed. Do you want to (1) Just exit, (2) Unmount all and reboot the system? (1/2): " choice
+        case $choice in
+            1)
+                info_msg "Exiting without reboot..."
+                exit 0
+                ;;
+            2)
+                 info_msg "Exiting chroot..."
+                 exit
+
+                 # The following commands should be executed after exiting chroot
+                 info_msg "Unmounting all filesystems..."
+                 umount -a
+
+                 info_msg "Rebooting the system..."
+                 reboot
+                ;;
+            *)
+                info_msg "Invalid choice. Please enter 1 or 2."
+                ;;
+        esac
+    done
+}                ;;
+            *)
+                info_msg "Invalid choice. Please enter 1 or 2."
+                ;;
+        esac
+    done
 }
 
 function install_arch_btw(){

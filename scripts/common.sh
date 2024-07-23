@@ -118,7 +118,21 @@ function set_language() {
         fi
     done
 }
-
+# Function to get locale input
+function set_locale() {
+    while true; do
+        info_msg "Enter the locale (e.g., en_US.UTF-8) [default: $DEFAULT_LOCALE]: "
+        read -r LOCALE
+        LOCALE=${LOCALE:-$DEFAULT_LOCALE}
+        if [ -n "$LOCALE" ]; then
+            declare -g LOCALE=$LOCALE
+            success_feedback "Locale will be set to $LOCALE"
+            break
+        else
+            error_feedback "Locale is required!"
+        fi
+    done
+}
 # Function to get username input
 function set_username() {
     while true; do
@@ -251,10 +265,6 @@ function create_disk_partitions(){
 
     partprobe ${DISK}
     sleep 2
-
-
-
-
 }
 
 
@@ -322,17 +332,42 @@ function mount_filesystems(){
 }
 
 # Main function to get all user inputs
-function set_user_inputs() {
-    set_disk
+function get_user_inputs() {
+  while true; do
+    # Get user input
     set_hostname
-    set_timezone
-    set_language
+    set_password "ROOT_PWD" "user: ROOT"
     set_username
+    set_password "USER_PWD" "user: ${ARCH_USERNAME}"
+    set_timezone
+    set_locale
+    set_language
     set_user_shell
-    set_password "USER_PASSWORD" "the user"
-    set_password "ANOTHER_PASSWORD" "another user"
+    set_password "LUKS_PWD" "the luks pwd"
+    
+    info_msg "Configuration:"
+    # Use the captured inputs for other operations
+    info_msg "Disk: $DISK"
+    info_msg "Hostname: $ARCH_HOSTNAME"
+    info_msg "Timezone: $TIMEZONE"
+    info_msg "Locale: $LOCALE"
+    info_msg "Language: $LANGUAGE" 
+    info_msg "Username: $ARCH_USERNAME"
+    info_msg "User shell: $USER_SHELL"
+    info_msg "Volume group: $VGROUP"
+    info_msg "Logic Volume: $LVM_NAME"
+    info_msg "Swap size: ${SWAPGB}B"
+    info_msg "Root size: ${ROOTGB}B"
+    info_msg "Home size: ${HOMEGB}B"
+    read -p "Do you accept this configuration? (yes/no): " response
+    if [[ "$response" == "yes" ]]; then
+        break
+    else
+        info_msg "Restarting configuration..."
+    fi
+  done
 
-  }
+}
 
 function conf_filesystem(){
   create_disk_partitions
