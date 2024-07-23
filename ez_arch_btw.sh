@@ -16,10 +16,9 @@ source ./scripts/install.sh
 check_uefi 
 
 # Install packages nessecary for the script
-install_packages ez_arch_btw.conf
+install_packages install_pkgs.conf
 
 # Get user input
-show_logo
 set_hostname
 set_password "ROOT_PWD" "user: ROOT"
 set_username
@@ -33,7 +32,6 @@ set_password "LUKS_PWD" "the luks pwd"
 set_disk
 
 # Wipe disk
-show_logo
 wipe_disk
 
 # Configure file system
@@ -42,6 +40,7 @@ conf_filesystem
 # Install Arch btw..
 info_msg "Installing Arch btw.."
 info_msg "Configuration:"
+
 # Use the captured inputs for other operations
 info_msg "Disk: $DISK"
 info_msg "Hostname: $ARCH_HOSTNAME"
