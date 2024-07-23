@@ -26,18 +26,8 @@ read_packages_from_file() {
     pacstrap -K /mnt $pacstrap_packages
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
-
-    export TIMEZONE
-    export LANGUAGE
-    export ARCH_HOSTNAME
-    export ROOT_PWD
-    export USER_SHELL
-    export ARCH_USERNAME
-    export USER_PWD
-    export chroot_packages
-
     arch-chroot /mnt /bin/bash <<EOF
-    pacman -Syu --noconfirmation ${packages}
+    pacman -Syu --noconfirm ${packages}
     systemctl enable NetworkManager
     systemctl enable sshd
     systemctl enable gdm
