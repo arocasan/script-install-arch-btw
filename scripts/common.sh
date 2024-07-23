@@ -237,6 +237,8 @@ function set_disk() {
 
 # Function to wipe disk
 function wipe_disk() {
+    while true; do
+
     info_msg "Do you want to wipe the disk $DISK? This action is irreversible. (yes/no)"
     read wipe_confirmation
 
@@ -265,9 +267,15 @@ function wipe_disk() {
         trap self_remove EXIT 
             exit
         fi
+        break
+    elif [[ $wipe_confirmation == "no" ]]; then
+
+       error_feedback "Disk wipe operation cancelled."
+        break
     else
-        error_feedback "Disk wipe operation cancelled."
+        error_feedback "Invalid response. Please enter 'yes' or 'no'."
     fi
+  done
 }
 
 # Function to create disk partitions
