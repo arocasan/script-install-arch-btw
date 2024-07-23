@@ -23,11 +23,12 @@ install_packages ez_arch_btw.conf
 # Get user input
 show_logo
 set_hostname
+set_password "ROOT_PWD" "user: ROOT"
 set_username
+set_password "USER_PWD" "user: ${ARCH_USERNAME}"
 set_timezone
 set_language
 set_user_shell
-set_password "ARCH_USER" "the user"
 set_password "LUKS_PWD" "the luks pwd"
 
 # Set configuration
