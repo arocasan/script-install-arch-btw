@@ -93,9 +93,22 @@ EOF
     echo "Key creation completed"
     
 
+    echo "Undoing the purpose of encryption"
+    dd bs=512 count=4 if=/dev/random of=/crypto_keyfile.bin iflag=fullblock
+    chmod 600 /crypto_keyfile.bin
+    cecho "${LUKS_PWD}" | cryptsetup luksAddKey ${DISK}p3 /crypto_keyfile.bin
+    sed -i '/^FILES=(/!b;/\/crypto_keyfile\.bin/!s/)/ \/crypto_keyfile\.bin)/' /etc/mkinitcpio.conf
+
+
+
+    echo "Done with the undoing"
+    
+
     echo "Adding keys to partition"
-    cryptsetup luksAddKey ${DISK}p3 /secure/root_keyfile.bin
-    '/^FILES=/s/^FILES=.*/FILES=(\/secure\/root_keyfile.bin)/' /etc/mkinitcpio.conf 
+    echo "${LUKS_PWD}" | cryptsetup luksAddKey ${DISK}p3 /secure/root_keyfile.bin
+    sed -i '/^FILES=/!b;/\/secure\/root_keyfile\.bin/!s/)/ \/secure\/root_keyfile\.bin)/' /etc/mkinitcpio.conf
+
+
     echo "Keys added"
     echo "Generate ramdisks..."
     mkinitcpio -p linux
