@@ -12,6 +12,8 @@ source ./scripts/common.sh
 # Load install functions
 source ./scripts/install.sh
 
+ PGK=$(read_packages_from_file "chroot_arch_btw.conf")
+ echo $PGK
 # Verify system is booted into UEFI mode
 show_logo
 check_uefi 
