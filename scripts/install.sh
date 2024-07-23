@@ -5,7 +5,7 @@ echo "yoyoyo"
 # Function to read packages from a file
 read_packages_from_file() {
     local file_name=$1
-    local package_file="${PACKAGE_DIR}/${file_name}"
+    local package_file="${PACKAGES_DIR}/${file_name}"
 
     if [[ ! -f $package_file ]]; then
         echo "Error: File '$package_file' not found!"
