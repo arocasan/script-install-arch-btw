@@ -126,15 +126,53 @@ EOF
     cd yay
     makepkg -si --noconfirm
 EOF
+
 arch-chroot /mnt /bin/bash <<EOF
+
     echo "Reverting nopasswd for wheels"
     sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
+
+
+
 EOF
     success_feedback "System configured successfully."
     lsblk
 }
 
+function aroca_conf() {
+    while true; do
+        echo "Do you want to install AROCA configurations? (yes/no)"
+        read -r response
+        if [[ $response == "yes" ]]; then
+          cp /conf/50-zsa.rules /mnt/etc/udev/rules.d/
+
+            arch-chroot /mnt /bin/bash <<EOF
+                echo "Configuring GDM for automatic login"
+                if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
+                    sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
+                else
+                    echo -e "\n[daemon]\nAutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1" >> /etc/gdm/custom.conf
+                fi
+
+        "Configuring ZSA Keymapp"
+        su - ${ARCH_USERNAME} 
+        sudo groupadd plugdev
+        sudo usermod -aG plugdev $USER
+
+EOF
+            echo "arcoa configurations installed."
+            break
+        elif [[ $response == "no" ]]; then
+            echo "arcoa configurations not installed."
+            break
+        else
+            echo "Invalid response. Please enter 'yes' or 'no'."
+        fi
+    done
+}
+
 function install_arch_btw(){
   pacstrap_arch_btw
   configure_arch_btw
+  aroca_conf
 }
