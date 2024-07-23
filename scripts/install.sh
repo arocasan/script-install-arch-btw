@@ -5,7 +5,6 @@ echo "yoyoyo"
 # Function to read packages from a file
 read_packages_from_file() {
 
-  info_msg "reading packages"
     local file_name=$1
     local package_file="${PACKAGES_DIR}/${file_name}"
 
@@ -15,7 +14,6 @@ read_packages_from_file() {
     fi
 
     local packages=$(tr '\n' ' ' < "$package_file")
-    info_msg "Packages: $packages"
 }
 # Install arch btw...
  function pacstrap_arch_btw() {
