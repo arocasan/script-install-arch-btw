@@ -14,6 +14,7 @@ read_packages_from_file() {
     fi
 
     local packages=$(tr '\n' ' ' < "$package_file")
+    info_msg $packages
 }
 # Install arch btw...
  function pacstrap_arch_btw() {
