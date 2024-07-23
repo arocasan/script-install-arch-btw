@@ -60,12 +60,17 @@ read_packages_from_file() {
     echo "setting keymaps to ${KEYMAP}"
     echo "KEYMAP=${KEYMAP}" A > /etc/vconsole.conf
 
+
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
     echo "${ARCH_HOSTNAME}" > /etc/hostname
     (echo "${ROOT_PWD}"; echo "${ROOT_PWD}") | passwd
     useradd -m -G wheel -s ${USER_SHELL} ${ARCH_USERNAME}
     (echo "${USER_PWD}"; echo "${USER_PWD}") | passwd ${ARCH_USERNAME}
+    echo "Configuring sudoers"
     sed -i '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
+    echo "Temporary setting nopasswd sudoers for wheel"
+    sed -i '/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^# //' /etc/sudoers
+
 EOF
 }
  function configure_arch_btw() {
@@ -108,7 +113,9 @@ EOF
     su - ${ARCH_USERNAME} 
     git clone https://aur.archlinux.org/yay.git
     cd yay
-    makepkg -si
+    makepkg -si --noconfirm
+    echo "Reverting nopasswd for wheels"
+    sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
 EOF
     success_feedback "System configured successfully."
     lsblk
