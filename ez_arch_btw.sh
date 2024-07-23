@@ -11,8 +11,7 @@ source ./scripts/common.sh
 
 # Load install functions
 source ./scripts/install.sh
-PKG=$(read_packages_from_file "pacstrap_arch_btw.conf")
-echo "What gives ${PKG}"
+
 # Verify system is booted into UEFI mode
 show_logo
 check_uefi 
