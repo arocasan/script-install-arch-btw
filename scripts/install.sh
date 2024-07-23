@@ -58,7 +58,7 @@ read_packages_from_file() {
     echo "locale updated"
 
     echo "setting keymaps to ${KEYMAP}"
-    localectl set-keymap --no-convert ${KEYMAP}
+    echo "KEYMAP=${KEYMAP}" A > /etc/vconsole.conf
 
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
     echo "${ARCH_HOSTNAME}" > /etc/hostname
@@ -105,6 +105,7 @@ EOF
     echo "Just checking lsblk"
     lsblk
     echo "atempt to install yay"
+    su - ${ARCH_USERNAME} 
     git clone https://aur.archlinux.org/yay.git
     cd yay
     makepkg -si
