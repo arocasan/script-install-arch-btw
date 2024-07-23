@@ -17,8 +17,15 @@ read_packages_from_file() {
 }
 # Install arch btw...
  function pacstrap_arch_btw() {
-   local pacstrap=$(read_packages_from_file "pacstrap_arch_btw.conf")
-   local packages=$(read_packages_from_file "chroot_arch_btw.conf")
+   local pacstrap_packages=$(read_packages_from_file "pacstrap_arch_btw.conf")
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    local chroot_packages=$(read_packages_from_file "chroot_arch_btw.conf")
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
 
     cp -r $PACKAGES_DIR /mnt
 
