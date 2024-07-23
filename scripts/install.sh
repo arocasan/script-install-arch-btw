@@ -4,6 +4,8 @@ source ./scripts/common.sh
 echo "yoyoyo"
 # Function to read packages from a file
 read_packages_from_file() {
+
+  info_msg "reading packages"
     local file_name=$1
     local package_file="${PACKAGES_DIR}/${file_name}"
 
@@ -29,7 +31,7 @@ read_packages_from_file() {
 
     cp -r $PACKAGES_DIR /mnt
 
-    pacstrap -K /mnt $pacstrap 
+    pacstrap -K /mnt $pacstrap_packages
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
     arch-chroot /mnt /bin/bash <<EOF
