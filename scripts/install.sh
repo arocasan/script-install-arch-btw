@@ -20,7 +20,7 @@ read_packages_from_file() {
    local pacstrap=$(read_packages_from_file "pacstrap_arch_btw.conf")
    local packages=$(read_packages_from_file "chroot_arch_btw.conf")
 
-    cp $PACKAGES_DIR /mnt
+    cp -r $PACKAGES_DIR /mnt
 
     pacstrap -K /mnt $pacstrap 
 
