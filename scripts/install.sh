@@ -26,8 +26,12 @@ read_packages_from_file() {
     pacstrap -K /mnt $pacstrap_packages
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
+    info_msg "Trying to pacman -Syu"
+    info_msg $chroot_packages
     arch-chroot /mnt /bin/bash <<EOF
-    pacman -Syu --noconfirm ${packages}
+    echo "What's missing" 
+    pacman -Syu --noconfirm ${chroot_packages}
+    echo "What is missing="
     systemctl enable NetworkManager
     systemctl enable sshd
     systemctl enable gdm
