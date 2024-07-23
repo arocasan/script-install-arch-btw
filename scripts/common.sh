@@ -90,7 +90,7 @@ function set_hostname() {
         ARCH_HOSTNAME=${ARCH_HOSTNAME:-$DEFAULT_HOSTNAME}
         if [ -n "$ARCH_HOSTNAME" ]; then
             declare -g ARCH_HOSTNAME=$ARCH_HOSTNAME
-            success_feedback "Hostname will be set to $ARCH_HOSTNAME"
+            success_feedback "Hostname will be set to $ARCH_HOSTNAME \n"
             break
         else
             error_feedback "Hostname is required!"
@@ -106,7 +106,7 @@ function set_timezone() {
         TIMEZONE=${TIMEZONE:-$DEFAULT_TIMEZONE}
         if [ -n "$TIMEZONE" ]; then
             declare -g TIMEZONE=$TIMEZONE
-            success_feedback "Timezone will be set to $TIMEZONE"
+            success_feedback "Timezone will be set to $TIMEZONE \n"
             break
         else
             error_feedback "Timezone is required!"
