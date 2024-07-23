@@ -25,6 +25,7 @@ read_packages_from_file() {
     pacstrap -K /mnt $pacstrap_packages
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
+    cat /mnt/etc/fstab
     info_msg "Trying to pacman -Syu"
     info_msg $chroot_packages
     arch-chroot /mnt /bin/bash <<EOF
@@ -51,10 +52,13 @@ read_packages_from_file() {
     sed -i '/^FallbackNTP=/s|=.*|=0.pool.ntp.org 1.pool.ntp.org|' /etc/systemd/timesyncd.conf
     echo "timesyncd.conf updated"
 
+    echo "setting locale as ${LOCALE}"
     sed -i '/^#${LOCALE}/s/^#//' /etc/locale.gen
     locale-gen
+    echo "locale updated"
 
-
+    echo "setting keymaps to ${KEYMAP}"
+    localectl set-keymap --no-convert ${KEYMAP}
 
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
     echo "${ARCH_HOSTNAME}" > /etc/hostname
@@ -97,32 +101,16 @@ EOF
     echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
     grub-mkconfig -o /boot/efi/EFI/${VGROUP}/grub.cfg
+    
+    echo "Just checking lsblk"
+    lsblk
+    echo "atempt to install yay"
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -si
 EOF
     success_feedback "System configured successfully."
-}
-
-# Function to handle post-installation steps
-install_completed() {
-    while true; do
-        read -p "Installation completed. Do you want to (1) Just exit, (2) Unmount all and reboot the system? (1/2): " choice
-        case $choice in
-            1)
-                info_msg "Exiting without reboot..."
-                exit 0
-                ;;
-            2)
-                info_msg "Exiting chroot..."
-                exit
-                info_msg "Unmounting all filesystems and rebooting the system..."
-                umount -a
-                info_msg "Rebooting the system..."
-                reboot
-                ;;
-            *)
-                info_msg "Invalid choice. Please enter 1 or 2."
-                ;;
-        esac
-    done
+    lsblk
 }
 
 function install_arch_btw(){

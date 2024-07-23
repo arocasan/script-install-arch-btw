@@ -133,6 +133,23 @@ function set_locale() {
         fi
     done
 }
+
+# Function to get keymap input
+function set_keymap() {
+    while true; do
+        info_msg "Enter the keymap (e.g., us) [default: $DEFAULT_KEYMAP]: "
+        read -r KEYMAP
+        KEYMAP=${KEYMAP:-$DEFAULT_KEYMAP}
+        if [ -n "$KEYMAP" ]; then
+            declare -g KEYMAP=$KEYMAP
+            success_feedback "keymap will be set to $KEYMAP"
+            break
+        else
+            error_feedback "keymap is required!"
+        fi
+    done
+}
+
 # Function to get username input
 function set_username() {
     while true; do
@@ -341,6 +358,7 @@ function get_user_inputs() {
     set_password "USER_PWD" "user: ${ARCH_USERNAME}"
     set_timezone
     set_locale
+    set_keymap
     set_language
     set_user_shell
     set_password "LUKS_PWD" "the luks pwd"
@@ -351,6 +369,7 @@ function get_user_inputs() {
     info_msg "Hostname: $ARCH_HOSTNAME"
     info_msg "Timezone: $TIMEZONE"
     info_msg "Locale: $LOCALE"
+    info_msg "Keymao: $KEYMAP"
     info_msg "Language: $LANGUAGE" 
     info_msg "Username: $ARCH_USERNAME"
     info_msg "User shell: $USER_SHELL"

@@ -37,4 +37,4 @@ info_msg "Installing Arch btw.."
 install_arch_btw
 
 # Install completed exit or exit umount and reboot
-install_completed
+#install_completed
