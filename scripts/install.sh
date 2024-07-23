@@ -109,6 +109,7 @@ EOF
     
     echo "Just checking lsblk"
     lsblk
+    pacman -Syu
     echo "atempt to install yay"
     su - ${ARCH_USERNAME} 
     git clone https://aur.archlinux.org/yay.git
