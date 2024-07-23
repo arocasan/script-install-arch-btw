@@ -111,32 +111,13 @@ install_completed() {
                 exit 0
                 ;;
             2)
-                # Function to handle post-installation steps
-install_completed() {
-    while true; do
-        read -p "Installation completed. Do you want to (1) Just exit, (2) Unmount all and reboot the system? (1/2): " choice
-        case $choice in
-            1)
-                info_msg "Exiting without reboot..."
-                exit 0
+                info_msg "Exiting chroot..."
+                exit
+                info_msg "Unmounting all filesystems and rebooting the system..."
+                umount -a
+                info_msg "Rebooting the system..."
+                reboot
                 ;;
-            2)
-                 info_msg "Exiting chroot..."
-                 exit
-
-                 # The following commands should be executed after exiting chroot
-                 info_msg "Unmounting all filesystems..."
-                 umount -a
-
-                 info_msg "Rebooting the system..."
-                 reboot
-                ;;
-            *)
-                info_msg "Invalid choice. Please enter 1 or 2."
-                ;;
-        esac
-    done
-}                ;;
             *)
                 info_msg "Invalid choice. Please enter 1 or 2."
                 ;;
