@@ -13,7 +13,7 @@ self_remove() {
 # Function to show progress with bold, italic, and purple text
 function info_msg() {
 
-    echo -e "\033[94m$1\033[0m" 
+    echo -e "\033[1;3;94m$1\033[0m" 
 
 }
 
