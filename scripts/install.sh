@@ -27,7 +27,7 @@ read_packages_from_file() {
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
     arch-chroot /mnt /bin/bash <<EOCHROOT
-    pacman -Syu --noconfirmation ${packages}
+    pacman -Syu --noconfirmation ${chroot_packages}
     systemctl enable NetworkManager
     systemctl enable sshd
     systemctl enable gdm
