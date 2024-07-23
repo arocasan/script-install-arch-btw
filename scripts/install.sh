@@ -27,12 +27,12 @@ read_packages_from_file() {
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
     arch-chroot /mnt /bin/bash -c "
+    echo 'from chroot mfS'
     pacman -Syu --noconfirmation ${chroot_packages}
+    echo 'passed Pacman mfS'
     systemctl enable NetworkManager
     systemctl enable sshd
     systemctl enable gdm
-
-
     ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
     echo "${LANGUAGE}" > /etc/locale.gen
     locale-gen
@@ -47,7 +47,7 @@ read_packages_from_file() {
  function configure_arch_btw() {
     show_logo
     info_msg "Configuring the system..."
-    arch-chroot /mnt /bin/bash <<EOF
+    arch-chroot /mnt /bin/bash -c " 
     sed -i 's/^HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)/HOOKS=(base udev autodetect modconf block encrypt lvm2 filesystems fsck)/' /etc/mkinitcpio.conf
     mkinitcpio -p linux
     grub-install --efi-directory=/boot/efi
@@ -55,7 +55,7 @@ read_packages_from_file() {
     sed -i 's|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value kid -s UUID -o value ${DISK}p3):luks_lvm root=/dev/mapper/arch-root"|' /etc/default/grub
     mkinitcpio -p linux
     grub-mkconfig -o /boot/grub/grub.cfg
-EOF
+    "
     success_feedback "System configured successfully."
 }
 
