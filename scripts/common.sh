@@ -359,13 +359,20 @@ function get_user_inputs() {
     info_msg "Swap size: ${SWAPGB}B"
     info_msg "Root size: ${ROOTGB}B"
     info_msg "Home size: ${HOMEGB}B"
+    while true; do 
     read -p "Do you accept this configuration? (yes/no): " response
     if [[ "$response" == "yes" ]]; then
-        break
+        info_msg "Will go on then..btw.."
+        return 0
+    elif [[ "$response" == "no" ]]; then
+      "Restarting configuration..."
+      break
+
     else
-        info_msg "Restarting configuration..."
+        info_msg "Invalid response. Please enter 'yes' or 'no'."
     fi
   done
+done
 
 }
 
