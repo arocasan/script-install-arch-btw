@@ -26,7 +26,7 @@ read_packages_from_file() {
     pacstrap -K /mnt $pacstrap_packages
 
     genfstab -U -p /mnt >> /mnt/etc/fstab
-    arch-chroot /mnt /bin/bash <<EOCHROOT
+    arch-chroot /mnt /bin/bash -c "
     pacman -Syu --noconfirmation ${chroot_packages}
     systemctl enable NetworkManager
     systemctl enable sshd
@@ -42,7 +42,7 @@ read_packages_from_file() {
     useradd -m -G wheel -s ${USER_SHELL} ${ARCH_USERNAME}
     (echo "${USER_PWD}"; echo "${USER_PWD}") | passwd ${ARCH_USERNAME}
     echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers
-EOCHROOT
+    "
 }
  function configure_arch_btw() {
     show_logo
