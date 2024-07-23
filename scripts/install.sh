@@ -1,4 +1,4 @@
-# Load common functions
+#pacstrap  Load common functions
 source ./scripts/common.sh
 
 echo "yoyoyo"
