@@ -58,7 +58,7 @@ read_packages_from_file() {
     echo "locale updated"
 
     echo "setting keymaps to ${KEYMAP}"
-    echo "KEYMAP=${KEYMAP}" A > /etc/vconsole.conf
+    echo "KEYMAP=${KEYMAP}" > /etc/vconsole.conf
 
 
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
