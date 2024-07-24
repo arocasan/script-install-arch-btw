@@ -1,11 +1,10 @@
 #!/bin/bash
-LOGFILE="/var/log/ezinstall-arch-btw.log"
 # Load defaults
 source ./conf/defaults.conf
 
  # Remove myself
 self_remove() {
-  rm -rf ~/ezinstall-arch-btw
+  rm -rf ~/script-install-arch-btw
   cd
 }
 
