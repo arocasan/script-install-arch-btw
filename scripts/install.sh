@@ -144,8 +144,8 @@ function aroca_conf() {
         echo "Do you want to install AROCA configurations? (yes/no)"
         read -r response
         if [[ $response == "yes" ]]; then
-          cp /conf/50-zsa.rules /mnt/etc/udev/rules.d/
-          cp /conf/arch-btw.png /mnt/etc/boot
+          cp ./conf/50-zsa.rules /mnt/etc/udev/rules.d/
+          cp ./conf/arch-btw.png /mnt/etc/boot
 
 
 
@@ -186,8 +186,8 @@ function aroca_conf() {
 
         "Configuring ZSA Keymapp"
         su - ${ARCH_USERNAME} 
-        sudo groupadd plugdev
-        sudo usermod -aG plugdev $USER
+        groupadd plugdev
+        usermod -aG plugdev $USER
 
 EOF
             echo "arcoa configurations installed."
