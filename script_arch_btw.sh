@@ -36,5 +36,5 @@ info_msg "Installing Arch btw.."
 # Pacstrap and arch-chroot installations/configurations
 install_arch_btw
 
-# Install completed exit or exit umount and reboot
-#install_completed
+# Delete dir
+self_remove
