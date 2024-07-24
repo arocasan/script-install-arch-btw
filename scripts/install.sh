@@ -145,6 +145,11 @@ function aroca_conf() {
         read -r response
         if [[ $response == "yes" ]]; then
           cp /conf/50-zsa.rules /mnt/etc/udev/rules.d/
+          cp /conf/arch-btw.png /mnt/etc/boot
+
+
+
+
 
             arch-chroot /mnt /bin/bash <<EOF
                 echo "Configuring GDM for automatic login"
@@ -153,6 +158,31 @@ function aroca_conf() {
                 else
                     echo -e "\n[daemon]\nAutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1" >> /etc/gdm/custom.conf
                 fi
+        echo "Setting GRUB background"
+        sed -i 's|^#GRUB_BACKGROUND=.*|GRUB_BACKGROUND="/boot/arc-btw.png"|' /etc/default/grub
+
+        echo "Setting GRUB resolution"
+        sed -i 's|^#GRUB_GFXMODE=.*|GRUB_GFXMODE="${GRUB_RESOLUTION}"|' /etc/default/grub
+
+        echo "Setting GRUB colors"
+        sed -i 's|^#GRUB_COLOR_NORMAL=.*|GRUB_COLOR_NORMAL="${GRUB_COLOR_NORMAL}"|' /etc/default/grub
+        sed -i 's|^#GRUB_COLOR_HIGHLIGHT=.*|GRUB_COLOR_HIGHLIGHT="${GRUB_COLOR_HIGHLIGHT}"|' /etc/default/grub
+
+
+    echo "Generate ramdisks..."
+    mkinitcpio -p linux
+    echo "Ramdisks completed"
+
+    echo "Installing GRUB"
+    grub-install --efi-directory=/boot/efi
+    echo "Generate GRUB config"
+    grub-mkconfig -o /boot/grub/grub.cfg
+    grub-mkconfig -o /boot/efi/EFI/${VGROUP}/grub.cfg
+
+
+
+
+
 
         "Configuring ZSA Keymapp"
         su - ${ARCH_USERNAME} 
