@@ -66,7 +66,7 @@ read_packages_from_file() {
     (echo "${ROOT_PWD}"; echo "${ROOT_PWD}") | passwd
     useradd -m -G wheel -s ${USER_SHELL} ${ARCH_USERNAME}
     (echo "${USER_PWD}"; echo "${USER_PWD}") | passwd ${ARCH_USERNAME}
-    echo "Configuring sudoers"
+   echo "Configuring sudoers"
     sed -i '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
     echo "Temporary setting nopasswd sudoers for wheel"
     sed -i '/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^# //' /etc/sudoers
@@ -168,7 +168,10 @@ function aroca_conf() {
         sed -i 's|^#GRUB_COLOR_NORMAL=.*|GRUB_COLOR_NORMAL="${GRUB_COLOR_NORMAL}"|' /etc/default/grub
         sed -i 's|^#GRUB_COLOR_HIGHLIGHT=.*|GRUB_COLOR_HIGHLIGHT="${GRUB_COLOR_HIGHLIGHT}"|' /etc/default/grub
 
-
+    echo "Configuring KVM"
+    ip link add br0 type bridge
+    systemctl enable libvirtd.socket
+    systemctl start libvirtd.socket
     echo "Generate ramdisks..."
     mkinitcpio -p linux
     echo "Ramdisks completed"
