@@ -120,7 +120,6 @@ function aroca_conf() {
 
           arch-chroot /mnt /bin/bash <<EOF
 
-          su - ${ARCH_USERNAME} 
 
           echo "Configuring GDM for automatic login"
           if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
