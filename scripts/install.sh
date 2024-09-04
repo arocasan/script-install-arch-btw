@@ -110,11 +110,26 @@ function aroca_conf() {
         echo "Do you want to install AROCA configurations? (yes/no)"
         read -r response
         if [[ $response == "yes" ]]; then
-          cp ./conf/50-zsa.rules /etc/udev/rules.d/
-          cp ./conf/arch-btw.png /etc/boot/
-          cp ./conf/isolated.xml /tmp/
+          cp ./conf/50-zsa.rules /mnt/etc/udev/rules.d/
+          cp ./conf/arch-btw.png /mnt/etc/boot/
+          cp ./conf/isolated.xml /mnt/tmp/
 
 
+
+          echo "Disable sleep"
+          mkdir -p /mnt/etc/systemd/sleep.conf.d/
+          cp ./conf/disable-sleep.conf /mnt/etc/systemd/sleep.conf.d/
+
+          echo "Disable power button"
+          mkdir -p /mnt/etc/systemd/logind.conf.d/
+          cp ./conf/disable-power-button.conf /mnt/etc/systemd/logind.conf.d/
+
+          echo "Snapper config"
+          mkdir -p /mnt/etc/snapper/configs/
+          cp ./conf/root /mnt/etc/snapper/configs/
+
+          mkdir -p /mnt/etc/conf.d/
+          cp ./conf/snapper /mnt/etc/conf.d/
 
 
 
@@ -124,26 +139,6 @@ function aroca_conf() {
           echo "Dark-mode"
           gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
-          echo "Disable sleep"
-          mkdir -p /etc/systemd/sleep.conf.d/
-          cp ./conf/disable-sleep.conf /etc/systemd/sleep.conf.d/
-
-          echo "Disable power button"
-          mkdir -p /etc/systemd/logind.conf.d/
-          cp ./conf/disable-power-button.conf /etc/systemd/logind.conf.d/
-
-          echo "Setting up isolated subnet for vms"
-
-          virsh net-define /tmp/isolated.xml
-          virsh net-autostart isolated
-          virsh net-start isolated
-
-          echo "Snapper config"
-          mkdir -p /etc/snapper/configs/
-          cp ./conf/root /etc/snapper/configs/
-
-          mkdir -p /etc/conf.d/
-          cp ./conf/snapper /etc/conf.d/
           echo "Configuring GDM for automatic login"
           if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
             sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
@@ -180,25 +175,25 @@ function aroca_conf() {
 
 
 EOF
-            echo "arcoa configurations installed."
-            break
-        elif [[ $response == "no" ]]; then
-            echo "arcoa configurations not installed."
-            break
-        else
-            echo "Invalid response. Please enter 'yes' or 'no'."
+echo "arcoa configurations installed."
+break
+elif [[ $response == "no" ]]; then
+  echo "arcoa configurations not installed."
+  break
+else
+  echo "Invalid response. Please enter 'yes' or 'no'."
         fi
-    done
-}
+      done
+    }
 
-function install_arch_btw(){
-  pacstrap_arch_btw
-  configure_arch_btw
-  aroca_conf
-  arch-chroot /mnt /bin/bash <<EOF
+    function install_arch_btw(){
+      pacstrap_arch_btw
+      configure_arch_btw
+      aroca_conf
+      arch-chroot /mnt /bin/bash <<EOF
 
-    echo "Reverting nopasswd for wheels"
-    sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
+      echo "Reverting nopasswd for wheels"
+      sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
 
 
 
