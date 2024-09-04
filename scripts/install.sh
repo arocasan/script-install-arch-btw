@@ -87,7 +87,6 @@ EOF
     echo "Ramdisks completed"
 
     echo "Installing GRUB"
-    grub-install --efi-directory=/boot $DISK
     echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
     
@@ -101,15 +100,7 @@ EOF
     makepkg -si --noconfirm
 EOF
 
-arch-chroot /mnt /bin/bash <<EOF
-
-    echo "Reverting nopasswd for wheels"
-    sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
-
-
-
-EOF
-    success_feedback "System configured successfully."
+   success_feedback "System configured successfully."
     lsblk
 }
 
@@ -127,8 +118,8 @@ function aroca_conf() {
 
 
           arch-chroot /mnt /bin/bash <<EOF
-          echo "Temporary setting nopasswd sudoers for wheel"
-          sed -i '/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^# //' /etc/sudoers
+
+          su - ${ARCH_USERNAME} 
 
           echo "Configuring GDM for automatic login"
           if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
@@ -147,28 +138,19 @@ function aroca_conf() {
           sed -i 's|^#GRUB_COLOR_HIGHLIGHT=.*|GRUB_COLOR_HIGHLIGHT="${GRUB_COLOR_HIGHLIGHT}"|' /etc/default/grub
 
           echo "Configuring KVM"
-          ip link add br0 type bridge
           systemctl enable libvirtd.socket
           systemctl start libvirtd.socket
           echo "Generate ramdisks..."
           mkinitcpio -p linux
           echo "Ramdisks completed"
 
-          echo "Installing GRUB"
-          grub-install --efi-directory=/boot $DISK
           echo "Generate GRUB config"
           grub-mkconfig -o /boot/grub/grub.cfg
 
 
           "Configuring ZSA Keymapp"
-          su - ${ARCH_USERNAME} 
           groupadd plugdev
           usermod -aG plugdev $USER
-
-          echo "Reverting nopasswd for wheels"
-          sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
-
-
 
 
 EOF
@@ -187,4 +169,13 @@ function install_arch_btw(){
   pacstrap_arch_btw
   configure_arch_btw
   aroca_conf
+  arch-chroot /mnt /bin/bash <<EOF
+
+    echo "Reverting nopasswd for wheels"
+    sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
+
+
+
+EOF
+
 }

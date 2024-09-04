@@ -314,7 +314,7 @@ info_msg "Making directories"
 
 mkdir -p /mnt/{home,var,tmp,.snapshots}
 
-mkdir  /mnt/boot/efi
+mkdir -p /mnt/boot/efi
 info_msg "Moving on."
 ls /mnt
 
