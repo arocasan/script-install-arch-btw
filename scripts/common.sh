@@ -253,11 +253,6 @@ function wipe_disk() {
             error_feedback "Failed to wipe the disk $DISK."
             info_msg "Wiping disk $DISK..."
             unmount_all_mnt
-            swapoff /dev/mapper/${VGROUP}-swap
-            lvchange -an "${VGROUP}/swap"
-            lvchange -an "${VGROUP}/root"
-            vgchange -an "${VGROUP}"
-            cryptsetup luksClose $LVM_NAME
 
             sgdisk --zap-all $DISK
             sgdisk -o $DISK
@@ -283,76 +278,82 @@ function create_disk_partitions(){
     
     info_msg "Preparing partitions for $DISK"
 
-    sgdisk -n 1::+2G -t 1:ef00 $DISK
-    sgdisk -n 2::+4G -t 2:ef02 $DISK
-    sgdisk -n 3::-0  -t 3:8309 $DISK
+    sgdisk -n 1::+2G -t 1:ef02 --change-name=1:'BIOSBOOT' $DISK
+    sgdisk -n 2::+4G -t 2:ef00 --change-name=2:'EFIBOOT' $DISK
+    sgdisk -n 3::-0  -t 3:8309 --change-name=3:'ROOT' $DISK
 
     partprobe ${DISK}
     sleep 2
 }
 
+function create_subvolumes(){
+  info_msg "Creating btrfs subvolumes for $DISK"
 
-function create_lvm(){
-  info_msg "Configuring LVM and encryption for ${DISK}p3"
-  modprobe dm-crypt && modprobe dm-mod
-  echo "$LUKS_PWD" | cryptsetup luksFormat -v -s 512 -h sha512 ${DISK}p3 
-  echo "$LUKS_PWD" | cryptsetup open ${DISK}p3 ${LVM_NAME}
-
-  pvcreate /dev/mapper/$LVM_NAME
-  vgcreate $VGROUP /dev/mapper/$LVM_NAME
-  lvcreate -n swap -L $SWAPGB $VGROUP 
-  lvcreate -n root -L $ROOTGB $VGROUP 
-  lvcreate -n home -l $HOMEGB $VGROUP 
-  
-  vgchange -ay
-
-  info_msg | pvscan
-  info_msg | vgscan
-  info_msg | lvscan
-
-  info_msg | lvdisplay
-}
-
-function create_filesystems(){
-  info_msg "Creating filesystems for $DISK"
-  
-  unmount_all_mnt
-
- yes | mkfs.fat -F32 ${DISK}p1 
- yes | mkfs.ext4 ${DISK}p2
- yes | mkfs.btrfs -L root /dev/mapper/${VGROUP}-root
- yes | mkfs.btrfs -L home /dev/mapper/${VGROUP}-home
-
-  mkswap /dev/mapper/${VGROUP}-swap
-  swapon /dev/mapper/${VGROUP}-swap
-
-  success_feedback "Filesystems created for $DISK. Moving on"
+  btrfs subvolume create /mnt/@
+  btrfs subvolume create /mnt/@home
+  btrfs subvolume create /mnt/@var
+  btrfs subvolume create /mnt/@tmp
+  btrfs subvolume create /mnt/@.snapshots
 
 }
+
+function mount_subvolumes(){
+  info_msg "Mounting subvolumes on ${DISK}p3"
+
+  mount -o $SSD_MOUNT_OPT,subvol=@home ${DISK}p3 /mnt/home
+  mount -o $SSD_MOUNT_OPT,subvol=@tmp ${DISK}p3 /mnt/tmp
+  mount -o $SSD_MOUNT_OPT,subvol=@var ${DISK}p3 /mnt/var
+  mount -o $SSD_MOUNT_OPT,subvol=@s.snapshots ${DISK}p3 /mnt/.snapshots
+
+}
+
 
 function making_dirs(){
 
 info_msg "Making directories" 
 
-mkdir -p /mnt/{home,boot}
+mkdir -p /mnt/{home,var,tmp,.snapshots}
+
 mkdir  /mnt/boot/efi
 info_msg "Moving on."
 ls /mnt
 
 }
 
-function mount_filesystems(){
-  info_msg "Mounting filesystems"
 
-  mount /dev/mapper/${VGROUP}-root /mnt
-  making_dirs
-  mount /dev/mapper/${VGROUP}-home /mnt/home
-  mount ${DISK}p2 /mnt/boot
-  making_dirs
-  mount ${DISK}p1 /mnt/boot/efi
 
-  info_msg "Filesystems mounted. Moving on."
+
+function create_filesystems(){
+  info_msg "Creating filesystems for $DISK"
+
+  mkfs.vfat -F32 -n "EFIBOOT" ${DISK}p2 
+  mkfs.btrfs -L ROOT ${DISK}p3 -f
+  mount -t btrfs ${DISK}p3 /mnt
   
+  create_subvolumes
+
+  unmount_all_mnt
+
+  info_msg "Mounting @ subvolume"
+
+  mount -o $SSD_MOUNT_OPT,subvol=@ ${DISK}p3 /mnt
+  
+  making_dirs
+  
+  mount_subvolumes
+
+  mount -t vfat -L EFIBOOT /mnt/boot/
+ 
+
+  success_feedback "Filesystems created for $DISK. Moving on"
+
+}
+
+function makeflags_compression(){
+  cpucores=$(grep -c ^processor /proc/cpuinfo)
+  info_msg "CPU cores: $cpucores "
+  sed -i "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$cpucores\"/g" /etc/makepkg.conf
+  sed -i "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -T $cpucores -z -)/g" /etc/makepkg.conf
 }
 
 # Main function to get all user inputs
@@ -368,7 +369,6 @@ function get_user_inputs() {
     set_keymap
     set_language
     set_user_shell
-    set_password "LUKS_PWD" "the luks pwd"
     
     info_msg "Configuration:"
     # Use the captured inputs for other operations
@@ -380,11 +380,6 @@ function get_user_inputs() {
     info_msg "Language: $LANGUAGE" 
     info_msg "Username: $ARCH_USERNAME"
     info_msg "User shell: $USER_SHELL"
-    info_msg "Volume group: $VGROUP"
-    info_msg "Logic Volume: $LVM_NAME"
-    info_msg "Swap size: ${SWAPGB}B"
-    info_msg "Root size: ${ROOTGB}B"
-    info_msg "Home size: ${HOMEGB}B"
     while true; do 
     read -p "Do you accept this configuration? (yes/no): " response
     if [[ "$response" == "yes" ]]; then
@@ -404,7 +399,5 @@ done
 
 function conf_filesystem(){
   create_disk_partitions
-  create_lvm
   create_filesystems
-  mount_filesystems
 }

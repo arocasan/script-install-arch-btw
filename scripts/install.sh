@@ -53,7 +53,7 @@ read_packages_from_file() {
     echo "timesyncd.conf updated"
 
     echo "setting locale as ${LOCALE}"
-    sed -i '/^#${LOCALE}/s/^#//' /etc/locale.gen
+    sed -i 's/^#${LOCALE}/${LOCALE}/' /etc/locale.gen
     locale-gen
     echo "locale updated"
 
@@ -66,10 +66,16 @@ read_packages_from_file() {
     (echo "${ROOT_PWD}"; echo "${ROOT_PWD}") | passwd
     useradd -m -G wheel -s ${USER_SHELL} ${ARCH_USERNAME}
     (echo "${USER_PWD}"; echo "${USER_PWD}") | passwd ${ARCH_USERNAME}
-   echo "Configuring sudoers"
+    echo "Configuring sudoers"
     sed -i '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
     echo "Temporary setting nopasswd sudoers for wheel"
     sed -i '/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^# //' /etc/sudoers
+    echo "Add parallel downloading"
+    sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+
+    echo "Enable multilib"
+    sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
+    pacman -Sy --noconfirm --needed
 
 EOF
 }
@@ -77,36 +83,9 @@ EOF
     info_msg "Configuring the system..."
     arch-chroot /mnt /bin/bash <<EOF
     echo "Updating mkinitcpio HOOKS"
-    sed -i -e '/^HOOKS=/s/\(.*\)block\([^)]*\)/\1block encrypt\2/' -e '/^HOOKS=/s/\(.*\)filesystems\([^)]*\)/\1lvm2 filesystems\2/' -e '/^HOOKS=/s/\(encrypt \)\1*/\1/' -e '/^HOOKS=/s/\(lvm2 \)\1*/\1/' /etc/mkinitcpio.conf
+    sed -i 's/HOOKS=(base udev*/& plymouth/' /etc/mkinitcpio.conf
     echo "mkinitcpio HOOKS Updated"
     
-    echo "Adding ${DISK}p3 as cryptdevice"
-    sed -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/s|"$| cryptdevice=UUID=$(blkid -s UUID -o value kid -s UUID -o value ${DISK}p3):${LVM_NAME} root=/dev/mapper/${VGROUP}-root"|' /etc/default/grub
-    grep '^HOOKS=' /etc/mkinitcpio.conf
-    echo "HOOK updated for ${DISK}p3"
-
-    echo "creating keys and required dir"
-    mkdir /secure
-    dd if=/dev/random of=/secure/root_keyfile.bin bs=512 count=8
-    dd if=/dev/random of=/secure/home_keyfile.bin bs=512 count=8
-    chmod 000 /secure/*
-    echo "Key creation completed"
-    
-
-    echo "Undoing the purpose of encryption"
-    dd bs=512 count=4 if=/dev/random of=/crypto_keyfile.bin iflag=fullblock
-    chmod 600 /crypto_keyfile.bin
-    echo "${LUKS_PWD}" | cryptsetup luksAddKey ${DISK}p3 /crypto_keyfile.bin
-    sed -i '/^FILES=(/!b;/\/crypto_keyfile\.bin/!s/)/ \/crypto_keyfile\.bin)/' /etc/mkinitcpio.conf
-    echo "Done with the undoing"
-    
-
-    echo "Adding keys to partition"
-    echo "${LUKS_PWD}" | cryptsetup luksAddKey ${DISK}p3 /secure/root_keyfile.bin
-    sed -i '/^FILES=/!b;/\/secure\/root_keyfile\.bin/!s/)/ \/secure\/root_keyfile\.bin)/' /etc/mkinitcpio.conf
-
-
-    echo "Keys added"
     echo "Generate ramdisks..."
     mkinitcpio -p linux
     echo "Ramdisks completed"
@@ -115,7 +94,6 @@ EOF
     grub-install --efi-directory=/boot/efi
     echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
-    grub-mkconfig -o /boot/efi/EFI/${VGROUP}/grub.cfg
     
     echo "Just checking lsblk"
     lsblk
@@ -180,11 +158,6 @@ function aroca_conf() {
     grub-install --efi-directory=/boot/efi
     echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
-    grub-mkconfig -o /boot/efi/EFI/${VGROUP}/grub.cfg
-
-
-
-
 
 
         "Configuring ZSA Keymapp"
