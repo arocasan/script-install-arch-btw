@@ -58,8 +58,8 @@ read_packages_from_file() {
     echo "locale updated"
 
     echo "setting keymaps to ${KEYMAP}"
-    localectl --no-ask-password set-keymap ${KEYMAP}
-
+    echo "KEYMAP=${KEYMAP}" >> /etc/vconsole.conf
+  
 
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
     echo "${ARCH_HOSTNAME}" > /etc/hostname
@@ -111,7 +111,7 @@ function aroca_conf() {
         read -r response
         if [[ $response == "yes" ]]; then
           cp ./conf/50-zsa.rules /mnt/etc/udev/rules.d/
-          cp ./conf/arch-btw.png /mnt/etc/boot/
+          cp ./conf/arch-btw.png /mnt/boot/
           cp ./conf/isolated.xml /mnt/tmp/
 
 
@@ -135,9 +135,6 @@ function aroca_conf() {
 
 
           arch-chroot /mnt /bin/bash <<EOF
-
-          echo "Dark-mode"
-          gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
           echo "Configuring GDM for automatic login"
           if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
