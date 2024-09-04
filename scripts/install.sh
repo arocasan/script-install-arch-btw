@@ -58,7 +58,7 @@ read_packages_from_file() {
     echo "locale updated"
 
     echo "setting keymaps to ${KEYMAP}"
-    echo "KEYMAP=${KEYMAP}" > /etc/vconsole.conf
+    localectl --no-ask-password set-keymap ${KEYMAP}
 
 
     echo "LANG=${LANGUAGE}" > /etc/locale.conf
@@ -110,9 +110,9 @@ function aroca_conf() {
         echo "Do you want to install AROCA configurations? (yes/no)"
         read -r response
         if [[ $response == "yes" ]]; then
-          cp ./conf/50-zsa.rules /mnt/etc/udev/rules.d/
-          cp ./conf/arch-btw.png /mnt/etc/boot/
-          cp ./conf/isolated.xml /mnt/tmp/
+          cp ./conf/50-zsa.rules /etc/udev/rules.d/
+          cp ./conf/arch-btw.png /etc/boot/
+          cp ./conf/isolated.xml /tmp/
 
 
 
@@ -121,6 +121,16 @@ function aroca_conf() {
 
           arch-chroot /mnt /bin/bash <<EOF
 
+          echo "Dark-mode"
+          gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
+          echo "Disable sleep"
+          mkdir -p /etc/systemd/sleep.conf.d/
+          cp ./conf/disable-sleep.conf /etc/systemd/sleep.conf.d/
+
+          echo "Disable power button"
+          mkdir -p /etc/systemd/logind.conf.d/
+          cp ./conf/disable-power-button.conf /etc/systemd/logind.conf.d/
 
           echo "Setting up isolated subnet for vms"
 
