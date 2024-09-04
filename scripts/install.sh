@@ -87,6 +87,7 @@ EOF
     echo "Ramdisks completed"
 
     echo "Installing GRUB"
+    grub-install --efi-directory=/boot ${DISK}
     echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
     
@@ -145,10 +146,12 @@ function aroca_conf() {
           echo "Ramdisks completed"
 
           echo "Generate GRUB config"
+          grub-install --efi-directory=/boot ${DISK}
           grub-mkconfig -o /boot/grub/grub.cfg
 
 
-          "Configuring ZSA Keymapp"
+          echo "Configuring ZSA Keymapp"
+
           groupadd plugdev
           usermod -aG plugdev $USER
 
