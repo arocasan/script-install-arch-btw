@@ -111,7 +111,8 @@ function aroca_conf() {
         read -r response
         if [[ $response == "yes" ]]; then
           cp ./conf/50-zsa.rules /mnt/etc/udev/rules.d/
-          cp ./conf/arch-btw.png /mnt/etc/boot
+          cp ./conf/arch-btw.png /mnt/etc/boot/
+          cp ./conf/isolated.xml /mnt/tmp/
 
 
 
@@ -121,6 +122,18 @@ function aroca_conf() {
           arch-chroot /mnt /bin/bash <<EOF
 
 
+          echo "Setting up isolated subnet for vms"
+
+          virsh net-define /tmp/isolated.xml
+          virsh net-autostart isolated
+          virsh net-start isolated
+
+          echo "Snapper config"
+          mkdir -p /etc/snapper/configs/
+          cp ./conf/root /etc/snapper/configs/
+
+          mkdir -p /etc/conf.d/
+          cp ./conf/snapper /etc/conf.d/
           echo "Configuring GDM for automatic login"
           if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
             sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
@@ -153,6 +166,7 @@ function aroca_conf() {
 
           groupadd plugdev
           usermod -aG plugdev $USER
+
 
 
 EOF
