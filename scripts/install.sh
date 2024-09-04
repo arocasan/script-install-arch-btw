@@ -82,16 +82,12 @@ EOF
  function configure_arch_btw() {
     info_msg "Configuring the system..."
     arch-chroot /mnt /bin/bash <<EOF
-    echo "Updating mkinitcpio HOOKS"
-    sed -i 's/HOOKS=(base udev*/& plymouth/' /etc/mkinitcpio.conf
-    echo "mkinitcpio HOOKS Updated"
-    
     echo "Generate ramdisks..."
     mkinitcpio -p linux
     echo "Ramdisks completed"
 
     echo "Installing GRUB"
-    grub-install --efi-directory=/boot/efi
+    grub-install --efi-directory=/boot $DISK
     echo "Generate GRUB config"
     grub-mkconfig -o /boot/grub/grub.cfg
     
@@ -129,41 +125,51 @@ function aroca_conf() {
 
 
 
-            arch-chroot /mnt /bin/bash <<EOF
-                echo "Configuring GDM for automatic login"
-                if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
-                    sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
-                else
-                    echo -e "\n[daemon]\nAutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1" >> /etc/gdm/custom.conf
-                fi
-        echo "Setting GRUB background"
-        sed -i 's|^#GRUB_BACKGROUND=.*|GRUB_BACKGROUND="/boot/arc-btw.png"|' /etc/default/grub
 
-        echo "Setting GRUB resolution"
-        sed -i 's|^#GRUB_GFXMODE=.*|GRUB_GFXMODE="${GRUB_RESOLUTION}"|' /etc/default/grub
+          arch-chroot /mnt /bin/bash <<EOF
+          echo "Temporary setting nopasswd sudoers for wheel"
+          sed -i '/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^# //' /etc/sudoers
 
-        echo "Setting GRUB colors"
-        sed -i 's|^#GRUB_COLOR_NORMAL=.*|GRUB_COLOR_NORMAL="${GRUB_COLOR_NORMAL}"|' /etc/default/grub
-        sed -i 's|^#GRUB_COLOR_HIGHLIGHT=.*|GRUB_COLOR_HIGHLIGHT="${GRUB_COLOR_HIGHLIGHT}"|' /etc/default/grub
+          echo "Configuring GDM for automatic login"
+          if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
+            sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
+          else
+            echo -e "\n[daemon]\nAutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1" >> /etc/gdm/custom.conf
+          fi
+          echo "Setting GRUB background"
+          sed -i 's|^#GRUB_BACKGROUND=.*|GRUB_BACKGROUND="/boot/arc-btw.png"|' /etc/default/grub
 
-    echo "Configuring KVM"
-    ip link add br0 type bridge
-    systemctl enable libvirtd.socket
-    systemctl start libvirtd.socket
-    echo "Generate ramdisks..."
-    mkinitcpio -p linux
-    echo "Ramdisks completed"
+          echo "Setting GRUB resolution"
+          sed -i 's|^#GRUB_GFXMODE=.*|GRUB_GFXMODE="${GRUB_RESOLUTION}"|' /etc/default/grub
 
-    echo "Installing GRUB"
-    grub-install --efi-directory=/boot/efi
-    echo "Generate GRUB config"
-    grub-mkconfig -o /boot/grub/grub.cfg
+          echo "Setting GRUB colors"
+          sed -i 's|^#GRUB_COLOR_NORMAL=.*|GRUB_COLOR_NORMAL="${GRUB_COLOR_NORMAL}"|' /etc/default/grub
+          sed -i 's|^#GRUB_COLOR_HIGHLIGHT=.*|GRUB_COLOR_HIGHLIGHT="${GRUB_COLOR_HIGHLIGHT}"|' /etc/default/grub
+
+          echo "Configuring KVM"
+          ip link add br0 type bridge
+          systemctl enable libvirtd.socket
+          systemctl start libvirtd.socket
+          echo "Generate ramdisks..."
+          mkinitcpio -p linux
+          echo "Ramdisks completed"
+
+          echo "Installing GRUB"
+          grub-install --efi-directory=/boot $DISK
+          echo "Generate GRUB config"
+          grub-mkconfig -o /boot/grub/grub.cfg
 
 
-        "Configuring ZSA Keymapp"
-        su - ${ARCH_USERNAME} 
-        groupadd plugdev
-        usermod -aG plugdev $USER
+          "Configuring ZSA Keymapp"
+          su - ${ARCH_USERNAME} 
+          groupadd plugdev
+          usermod -aG plugdev $USER
+
+          echo "Reverting nopasswd for wheels"
+          sed -i '/^ %wheel ALL=(ALL:ALL) NOPASSWD: ALL/s/^/# /' /etc/sudoers
+
+
+
 
 EOF
             echo "arcoa configurations installed."
