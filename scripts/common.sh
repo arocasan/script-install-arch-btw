@@ -402,10 +402,13 @@ function get_user_inputs() {
     set_keymap
     set_language
     set_user_shell
+    set_git_name
+    set_git_mail
     
     info_msg "Configuration:"
     # Use the captured inputs for other operations
-    info_msg "Disk: $DISK"
+    info_msg "git user: $GIT_NAME"
+    info_msg "git email $GIT_MAIL"
     info_msg "Hostname: $ARCH_HOSTNAME"
     info_msg "Timezone: $TIMEZONE"
     info_msg "Locale: $LOCALE"
@@ -433,4 +436,5 @@ done
 function conf_filesystem(){
   create_disk_partitions
   create_filesystems
+  
 }
