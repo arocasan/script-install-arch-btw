@@ -132,7 +132,19 @@ function aroca_conf() {
       mkdir -p /mnt/etc/conf.d/
       cp ./conf/snapper /mnt/etc/conf.d/
 
+
+      echo "Backup config"
+      mkdir -p /mnt/home/${ARCH_USERNAME}/backup
+
+      echo "Playground dir"
+      mkdir -p /mnt/home/${ARCH_USERNAME}/playground/{scripts,python,rust,go,terraform,vault}
+
       arch-chroot /mnt /bin/bash <<EOF
+
+      echo "Git config"
+      
+      git config --global user.email "${GIT_MAIL}"
+      git config --global user.name "${GIT_NAME}"
 
       echo "Configuring GDM for automatic login"
       if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then

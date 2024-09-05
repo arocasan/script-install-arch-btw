@@ -86,6 +86,39 @@ function set_hostname() {
     done
 }
 
+# Function to get git_name input
+function set_git_name() {
+    while true; do
+        info_msg "Enter the git_name [default: $DEFAULT_GIT_NAME]: "
+        read -r GIT_NAME
+        GIT_NAME=${GIT_NAME:-$DEFAULT_GIT_NAME}
+        if [ -n "$GIT_NAME" ]; then
+            declare -g GIT_NAME=$GIT_NAME
+            success_feedback "git_name will be set to $GIT_NAME \n"
+            break
+        else
+            error_feedback "git_name is required!"
+        fi
+    done
+}
+# Function to get git_mail input
+function set_git_mail() {
+    while true; do
+        info_msg "Enter the git_mail [default: $DEFAULT_GIT_MAIL]: "
+        read -r GIT_MAIL
+        GIT_MAIL=${GIT_MAIL:-$DEFAULT_GIT_MAIL}
+        if [ -n "$GIT_MAIL" ]; then
+            declare -g GIT_MAIL=$GIT_MAIL
+            success_feedback "git_mail will be set to $GIT_MAIL \n"
+            break
+        else
+            error_feedback "git_mail is required!"
+        fi
+    done
+}
+
+
+
 # Function to get timezone input
 function set_timezone() {
     while true; do
