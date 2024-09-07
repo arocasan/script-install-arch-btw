@@ -96,6 +96,13 @@ function configure_arch_btw() {
   pacman -Syu
   echo "atempt to install yay"
   su - ${ARCH_USERNAME} 
+  echo "atempt to set git user.name ${GIT_NAME} - ${GIT_MAIL}"
+  echo "Git config"
+
+  git config --global user.email "${GIT_MAIL}"
+  git config --global user.name "${GIT_NAME}"
+
+
   git clone https://aur.archlinux.org/yay.git
   cd yay
   makepkg -si --noconfirm
@@ -118,12 +125,12 @@ function aroca_conf() {
 
 
       echo "Disable sleep"
-      mkdir -p /mnt/etc/systemd/sleep.conf.d/
-      cp ./conf/disable-sleep.conf /mnt/etc/systemd/sleep.conf.d/
+     # mkdir -p /mnt/etc/systemd/sleep.conf.d/
+     # cp ./conf/disable-sleep.conf /mnt/etc/systemd/sleep.conf.d/
 
-      echo "Disable power button"
-      mkdir -p /mnt/etc/systemd/logind.conf.d/
-      cp ./conf/disable-power-button.conf /mnt/etc/systemd/logind.conf.d/
+     # echo "Disable power button"
+     # mkdir -p /mnt/etc/systemd/logind.conf.d/
+     # cp ./conf/disable-power-button.conf /mnt/etc/systemd/logind.conf.d/
 
       echo "Snapper config"
       mkdir -p /mnt/etc/snapper/configs/
@@ -138,15 +145,11 @@ function aroca_conf() {
 
       echo "Playground dir"
       mkdir -p /mnt/home/${ARCH_USERNAME}/playground/{scripts,python,rust,go,terraform,vault}
+      chown -R ${ARCH_USERNAME}:${ARCH_USERNAME} /mnt/home/${ARCH_USERNAME}/playground
 
       arch-chroot /mnt /bin/bash <<EOF
 
-      echo "Git config"
-      
-      git config --global user.email "${GIT_MAIL}"
-      git config --global user.name "${GIT_NAME}"
-
-      echo "Configuring GDM for automatic login"
+            echo "Configuring GDM for automatic login"
       if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
         sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
       else
