@@ -61,7 +61,12 @@ function pacstrap_arch_btw() {
   echo "KEYMAP=${KEYMAP}" >> /etc/vconsole.conf
 
 
-  echo "LANG=${LANGUAGE}" > /etc/locale.conf
+  echo "LANG=${LANGUAGE}" >> /etc/locale.conf
+  echo "LC_NUMERIC=${LOCALE}" >> /etc/locale.conf
+  echo "LC_TIME=${LOCALE}" >> /etc/locale.conf
+  echo "LC_MONETARY=${LOCALE}" >> /etc/locale.conf
+  echo "LC_PAPER=${LOCALE}" >> /etc/locale.conf
+  echo "LC_MEASUREMENT=${LOCALE}" >> /etc/locale.conf
   echo "${ARCH_HOSTNAME}" > /etc/hostname
   (echo "${ROOT_PWD}"; echo "${ROOT_PWD}") | passwd
   useradd -m -G wheel -s ${USER_SHELL} ${ARCH_USERNAME}
@@ -90,6 +95,10 @@ function configure_arch_btw() {
   grub-install --efi-directory=/boot ${DISK}
   echo "Generate GRUB config"
   grub-mkconfig -o /boot/grub/grub.cfg
+  git config --global user.email "${GIT_MAIL}"
+  git config --global user.name "${GIT_NAME}"
+
+
 
   echo "Just checking lsblk"
   lsblk
@@ -101,6 +110,10 @@ function configure_arch_btw() {
 
   git config --global user.email "${GIT_MAIL}"
   git config --global user.name "${GIT_NAME}"
+
+ git config --global user.email 
+ git config --global user.name 
+
 
 
   git clone https://aur.archlinux.org/yay.git
