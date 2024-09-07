@@ -136,15 +136,6 @@ function aroca_conf() {
       cp ./conf/isolated.xml /mnt/tmp/
 
 
-
-      echo "Disable sleep"
-     # mkdir -p /mnt/etc/systemd/sleep.conf.d/
-     # cp ./conf/disable-sleep.conf /mnt/etc/systemd/sleep.conf.d/
-
-     # echo "Disable power button"
-     # mkdir -p /mnt/etc/systemd/logind.conf.d/
-     # cp ./conf/disable-power-button.conf /mnt/etc/systemd/logind.conf.d/
-
       echo "Snapper config"
       mkdir -p /mnt/etc/snapper/configs/
       cp ./conf/root /mnt/etc/snapper/configs/
@@ -159,6 +150,10 @@ function aroca_conf() {
       echo "Playground dir"
       mkdir -p /mnt/home/${ARCH_USERNAME}/playground/{scripts,python,rust,go,terraform,vault}
       chown -R ${ARCH_USERNAME}:${ARCH_USERNAME} /mnt/home/${ARCH_USERNAME}/playground
+
+      echo "Clone tools"
+      cd /mnt/home/${ARCH_USERNAME}/playground
+      git clone https://github.com/arocasan/linux-tools
 
       arch-chroot /mnt /bin/bash <<EOF
 
@@ -194,6 +189,9 @@ function aroca_conf() {
 
       groupadd plugdev
       usermod -aG plugdev $USER
+
+
+      
 
 
 
