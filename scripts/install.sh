@@ -53,7 +53,8 @@ function pacstrap_arch_btw() {
   echo "timesyncd.conf updated"
 
   echo "setting locale as ${LOCALE}"
-  sed -i "s/^#${LOCALE} UTF-8/${LOCALE} UTF-8/" /etc/locale.gen
+  sed -i 's/^#${LOCALE} UTF-8/${LOCALE} UTF-8/' /etc/locale.gen
+  sed -i 's/^#${LANGUAGE} UTF-8/${LANGUAGE} UTF-8/' /etc/locale.gen
   locale-gen
   echo "locale updated"
 
