@@ -55,6 +55,9 @@ function pacstrap_arch_btw() {
   echo "setting locale as ${LOCALE}"
   sed -i 's/^#${LOCALE} UTF-8/${LOCALE} UTF-8/' /etc/locale.gen
   sed -i 's/^#${LANGUAGE} UTF-8/${LANGUAGE} UTF-8/' /etc/locale.gen
+  cat /etc/locale.gen | grep ${LOCALE}
+  cat /etc/locale.gen | grep ${LANGUAGE}
+
   locale-gen
   echo "locale updated"
 
@@ -68,6 +71,7 @@ function pacstrap_arch_btw() {
   echo "LC_MONETARY=${LOCALE}" >> /etc/locale.conf
   echo "LC_PAPER=${LOCALE}" >> /etc/locale.conf
   echo "LC_MEASUREMENT=${LOCALE}" >> /etc/locale.conf
+  cat /etc/locale.conf  
   echo "${ARCH_HOSTNAME}" > /etc/hostname
   (echo "${ROOT_PWD}"; echo "${ROOT_PWD}") | passwd
   useradd -m -G wheel -s ${USER_SHELL} ${ARCH_USERNAME}
