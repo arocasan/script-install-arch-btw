@@ -53,7 +53,7 @@ function pacstrap_arch_btw() {
   echo "timesyncd.conf updated"
 
   echo "setting locale as ${LOCALE}"
-  sed -i 's/^#${LOCALE}/${LOCALE}/' /etc/locale.gen
+  sed -i "s/^#${LOCALE}/${LOCALE}/" /etc/locale.gen
   locale-gen
   echo "locale updated"
 
@@ -111,8 +111,8 @@ function configure_arch_btw() {
   git config --global user.email "${GIT_MAIL}"
   git config --global user.name "${GIT_NAME}"
 
- git config --global user.email 
- git config --global user.name 
+  git config --global user.email 
+  git config --global user.name 
 
 
 
@@ -144,20 +144,21 @@ function aroca_conf() {
       cp ./conf/snapper /mnt/etc/conf.d/
 
 
+      arch-chroot /mnt /bin/bash <<EOF
       echo "Backup config"
-      mkdir -p /mnt/home/${ARCH_USERNAME}/backup
+      mkdir -p /home/${ARCH_USERNAME}/backup
+      chown -R ${ARCH_USERNAME}:${ARCH_USERNAME} /home/${ARCH_USERNAME}/backup
 
       echo "Playground dir"
-      mkdir -p /mnt/home/${ARCH_USERNAME}/playground/{scripts,python,rust,go,terraform,vault}
-      chown -R ${ARCH_USERNAME}:${ARCH_USERNAME} /mnt/home/${ARCH_USERNAME}/playground
+      mkdir -p home/${ARCH_USERNAME}/playground/{scripts,python,rust,go,terraform,vault}
+      chown -R ${ARCH_USERNAME}:${ARCH_USERNAME} /home/${ARCH_USERNAME}/playground
 
       echo "Clone tools"
-      cd /mnt/home/${ARCH_USERNAME}/playground
+      cd /home/${ARCH_USERNAME}/playground
       git clone https://github.com/arocasan/linux-tools
 
-      arch-chroot /mnt /bin/bash <<EOF
 
-            echo "Configuring GDM for automatic login"
+      echo "Configuring GDM for automatic login"
       if grep -q '^\[daemon\]' /etc/gdm/custom.conf; then
         sed -i '/^\[daemon\]/a\AutomaticLogin=${ARCH_USERNAME}\nAutomaticLoginEnable=True\nTimedLoginEnable=true\nTimedLogin=${ARCH_USERNAME}\nTimedLoginDelay=1' /etc/gdm/custom.conf
       else
@@ -191,7 +192,7 @@ function aroca_conf() {
       usermod -aG plugdev $USER
 
 
-      
+
 
 
 
