@@ -1,5 +1,9 @@
 #!/bin/bash
+# Define the log file
+LOGFILE="~/archbtw.log"
 
+# Redirect stdout and stderr to both the terminal and the log file
+exec > >(tee -a "$LOGFILE") 2>&1
 # Ensure script is run as root
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
