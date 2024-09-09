@@ -1,6 +1,19 @@
 #pacstrap  Load common functions
 source ./scripts/common.sh
 
+LOGFILE="~/ez-arch-install.log"
+
+# Function to handle script termination
+cleanup() {
+    echo "Script aborted or finished. Logs saved to $LOGFILE" | tee -a "$LOGFILE"
+}
+
+# Trap signals (e.g., INT for Ctrl+C and TERM for termination)
+trap cleanup EXIT
+
+# Redirect stdout and stderr to both terminal and log file
+exec > >(ts '[%Y-%m-%d %H:%M:%S]' | tee -a "$LOGFILE") 2>&1
+
 # Function to read packages from a file
 read_packages_from_file() {
 
