@@ -57,7 +57,7 @@ function pacstrap_arch_btw() {
   echo "LANG=${LANGUAGE}" > /etc/locale.conf
   echo "LC_CTYPE=${LOCALE}" >> /etc/locale.conf
   echo "LC_COLLATE=${LOCALE}" >> /etc/locale.conf
-  echo "LC_MESSAGES=${LOCALE}" >> /etc/locale.conf
+  echo "LC_MESSAGES=${LANGUAGE}" >> /etc/locale.conf
   echo "LC_NAME=${LOCALE}" >> /etc/locale.conf
   echo "LC_ADDRESS=${LOCALE}" >> /etc/locale.conf
   echo "LC_TELEPHONE=${LOCALE}" >> /etc/locale.conf
