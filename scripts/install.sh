@@ -52,14 +52,23 @@ function pacstrap_arch_btw() {
   sed -i '/^FallbackNTP=/s|=.*|=0.pool.ntp.org 1.pool.ntp.org|' /etc/systemd/timesyncd.conf
   echo "timesyncd.conf updated"
 
-  echo "setting locale as ${LOCALE}"
- 
-  echo "LANG=${LANGUAGE}" >> /etc/locale.conf
+  echo "setting locale as   ${LOCALE}"
+
+  echo "LANG=${LANGUAGE}" > /etc/locale.conf
+  echo "LC_CTYPE=${LOCALE}" >> /etc/locale.conf
+  echo "LC_COLLATE=${LOCALE}" >> /etc/locale.conf
+  echo "LC_MESSAGES=${LOCALE}" >> /etc/locale.conf
+  echo "LC_NAME=${LOCALE}" >> /etc/locale.conf
+  echo "LC_ADDRESS=${LOCALE}" >> /etc/locale.conf
+  echo "LC_TELEPHONE=${LOCALE}" >> /etc/locale.conf
+  echo "LC_IDENTIFICATION=${LOCALE}" >> /etc/locale.conf
+
   echo "LC_NUMERIC=${LOCALE}" >> /etc/locale.conf
   echo "LC_TIME=${LOCALE}" >> /etc/locale.conf
   echo "LC_MONETARY=${LOCALE}" >> /etc/locale.conf
   echo "LC_PAPER=${LOCALE}" >> /etc/locale.conf
   echo "LC_MEASUREMENT=${LOCALE}" >> /etc/locale.conf
+
   sed -i 's/^#${LOCALE} UTF-8/${LOCALE} UTF-8/' /etc/locale.gen
   sed -i 's/^#${LANGUAGE} UTF-8/${LANGUAGE} UTF-8/' /etc/locale.gen
   cat /etc/locale.gen | grep ${LOCALE}
