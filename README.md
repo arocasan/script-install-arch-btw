@@ -5,7 +5,7 @@
 Install git & run script
 
 ```
-pacman -Sy --needed --noconfirm git
+pacman -Sy --needed --noconfirm git moreutils
 cd
 git clone https://github.com/arocasan/script-install-arch-btw
 cd script-install-arch-btw
