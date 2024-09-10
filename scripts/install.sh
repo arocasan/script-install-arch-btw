@@ -42,7 +42,7 @@ function pacstrap_arch_btw() {
   info_msg "Trying to pacman -Syu"
   info_msg $chroot_packages
   arch-chroot /mnt /bin/bash <<EOF
-  echo "Installing packages" 
+  echo "Installing packages"
   pacman -Syu --noconfirm ${chroot_packages}
   echo "Packages installed"
 
@@ -51,6 +51,20 @@ function pacstrap_arch_btw() {
   systemctl enable sshd
   systemctl enable gdm
   echo "Done enabling applications"
+  echo "Creating brigde for virsh vms"
+
+  nmcli connection add type bridge con-name b0 ifname br0
+  nmcli connection modify br0 ipv4.method auto
+  nmcli connection modify br0 ipv4.method manual ipv4.addresses 192.168.1.29/24 ipv4.gateway 192.168.1.1 ipv4.dns 8.8.8.8
+  nmcli connection add type ethhernet con-name eth0-slave ifname enp0s31f6 master br0
+  nmcli connection modify eth0-slave ipv4.method ignore
+  nmcli connection up br0
+  nmcli connection up eth0-slave
+  
+  echo "Verifyin configuration"
+
+  ip addr show br0
+  bridge vlan show
 
 
   echo "Updating user and system settings, i.e timezone"
